@@ -2128,3 +2128,190 @@
 {"level":"error","message":"TypeError: Cannot read properties of undefined (reading 'refreshToken')\n    at exports.refreshToken (A:\\UrviProject\\chat-app\\backend\\controllers\\authController.js:104:38)\n    at Layer.handleRequest (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at Route.dispatch (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\lib\\route.js:117:3)\n    at handle (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\index.js:435:11)\n    at Layer.handleRequest (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\index.js:295:15\n    at processParams (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\index.js:582:12)\n    at next (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\index.js:291:5)\n    at Function.handle (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\index.js:186:3)","timestamp":"2025-08-06T10:29:18.074Z"}
 {"level":"error","message":"TypeError: Cannot read properties of undefined (reading 'refreshToken')\n    at exports.refreshToken (A:\\UrviProject\\chat-app\\backend\\controllers\\authController.js:104:38)\n    at Layer.handleRequest (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at Route.dispatch (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\lib\\route.js:117:3)\n    at handle (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\index.js:435:11)\n    at Layer.handleRequest (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\index.js:295:15\n    at processParams (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\index.js:582:12)\n    at next (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\index.js:291:5)\n    at Function.handle (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\index.js:186:3)","timestamp":"2025-08-06T10:29:18.470Z"}
 {"level":"error","message":"TypeError: Cannot read properties of undefined (reading 'refreshToken')\n    at exports.refreshToken (A:\\UrviProject\\chat-app\\backend\\controllers\\authController.js:104:38)\n    at Layer.handleRequest (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at Route.dispatch (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\lib\\route.js:117:3)\n    at handle (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\index.js:435:11)\n    at Layer.handleRequest (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\index.js:295:15\n    at processParams (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\index.js:582:12)\n    at next (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\index.js:291:5)\n    at Function.handle (A:\\UrviProject\\chat-app\\backend\\node_modules\\router\\index.js:186:3)","timestamp":"2025-08-06T10:29:18.855Z"}
+{"level":"info","message":"✅ User authenticated: Brij (ID: 29412141)","timestamp":"2025-08-06T10:46:57.973Z"}
+{"level":"info","message":"🔌 New connection: exv9sAbGKoIYUsc3AAAC","timestamp":"2025-08-06T10:46:57.978Z"}
+{"level":"info","message":"👤 User connected: Brij (ID: 29412141)","timestamp":"2025-08-06T10:46:57.979Z"}
+{"level":"info","message":"📊 Online users: 29412141","timestamp":"2025-08-06T10:46:57.979Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Brij: ping","timestamp":"2025-08-06T10:46:58.009Z"}
+{"level":"info","message":"🏓 Ping received from Brij: test","timestamp":"2025-08-06T10:46:58.010Z"}
+{"level":"info","message":"🔌 User disconnected: Brij (29412141)","timestamp":"2025-08-06T10:53:50.416Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-06T10:53:50.417Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-06T10:55:44.891Z"}
+{"level":"info","message":"🔌 New connection: vr1mmCXUJBCmBanwAAAF","timestamp":"2025-08-06T10:55:44.893Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-06T10:55:44.893Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-06T10:55:44.894Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-06T10:55:44.894Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-06T10:55:44.895Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-06T11:02:20.620Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-06T11:02:20.620Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:02:21.636Z"}
+{"level":"info","message":"🔌 New connection: Rv5u7xmahhIdQTLhAAAI","timestamp":"2025-08-06T11:02:21.638Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:02:21.638Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-06T11:02:21.639Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-06T11:02:21.661Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-06T11:02:21.662Z"}
+{"0":{"content":"dsadas","receiverId":"29412141-4a70-4361-b407-073e70d6b705","tempId":1754478148202},"level":"info","message":"🔔 Socket event from Urvi3: send_message","timestamp":"2025-08-06T11:02:28.203Z"}
+{"level":"info","message":"📤 Message attempt from Urvi3 (22) to user 29412141","timestamp":"2025-08-06T11:02:28.204Z"}
+{"level":"info","message":"📝 Message content: \"dsadas\"","timestamp":"2025-08-06T11:02:28.204Z"}
+{"level":"info","message":"💾 Saving message to database...","timestamp":"2025-08-06T11:02:28.205Z"}
+{"level":"error","message":"❌ Message processing failed: invalid input syntax for type uuid: \"29412141\"","timestamp":"2025-08-06T11:02:28.395Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-06T11:04:16.424Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-06T11:04:16.425Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:04:17.399Z"}
+{"level":"info","message":"🔌 New connection: 5hKi7pMEQ2Jk5iEmAAAM","timestamp":"2025-08-06T11:04:17.400Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:04:17.400Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-06T11:04:17.401Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-06T11:04:17.402Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-06T11:04:17.403Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-06T11:04:52.397Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-06T11:04:52.397Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:04:53.516Z"}
+{"level":"info","message":"🔌 New connection: fAAg951MvW3WUawoAAAQ","timestamp":"2025-08-06T11:04:53.517Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:04:53.518Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-06T11:04:53.518Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-06T11:04:53.523Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-06T11:04:53.524Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:05:52.242Z"}
+{"level":"info","message":"🔌 New connection: F8CbNJWVnfrMvuIJAAAT","timestamp":"2025-08-06T11:05:52.243Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:05:52.244Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-06T11:05:52.245Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-06T11:05:52.249Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-06T11:05:52.250Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:05:52.516Z"}
+{"level":"info","message":"🔌 New connection: r-Xqk_ZeMX9I_ee7AAAW","timestamp":"2025-08-06T11:05:52.517Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:05:52.517Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-06T11:05:52.518Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-06T11:05:52.519Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-06T11:05:52.519Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-06T11:05:52.709Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-06T11:05:52.709Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:05:52.747Z"}
+{"level":"info","message":"🔌 New connection: hLXope8dL1820K09AAAZ","timestamp":"2025-08-06T11:05:52.748Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:05:52.749Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-06T11:05:52.749Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-06T11:05:52.750Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-06T11:05:52.751Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:05:52.994Z"}
+{"level":"info","message":"🔌 New connection: ngepqPqeiSwG2Vo5AAAc","timestamp":"2025-08-06T11:05:53.003Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:05:53.006Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-06T11:05:53.007Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-06T11:05:53.017Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-06T11:05:53.021Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-06T11:05:53.337Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-06T11:05:53.338Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-06T11:05:53.341Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-06T11:05:53.342Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-06T11:05:53.426Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-06T11:05:53.427Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-06T11:05:53.428Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-06T11:05:53.429Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:05:54.292Z"}
+{"level":"info","message":"🔌 New connection: VwVSwQRzcrgqCtujAAAf","timestamp":"2025-08-06T11:05:54.293Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:05:54.294Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-06T11:05:54.294Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-06T11:05:54.296Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-06T11:05:54.296Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-06T11:07:07.285Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-06T11:07:07.286Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:16:49.758Z"}
+{"level":"info","message":"🔌 New connection: dpog25mpPglGM6VgAAAi","timestamp":"2025-08-06T11:16:49.759Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:16:49.759Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-06T11:16:49.760Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-06T11:16:49.761Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-06T11:16:49.761Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-06T11:19:09.298Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-06T11:19:09.299Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:19:10.502Z"}
+{"level":"info","message":"🔌 New connection: vnmopoIqzTpDOyt9AAAl","timestamp":"2025-08-06T11:19:10.503Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:19:10.503Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-06T11:19:10.504Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-06T11:19:10.506Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-06T11:19:10.507Z"}
+{"level":"info","message":"✅ User authenticated: Brij (ID: 29412141)","timestamp":"2025-08-06T11:19:10.695Z"}
+{"level":"info","message":"🔌 New connection: N7oQz5eaP7SigZ46AAAo","timestamp":"2025-08-06T11:19:10.714Z"}
+{"level":"info","message":"👤 User connected: Brij (ID: 29412141)","timestamp":"2025-08-06T11:19:10.715Z"}
+{"level":"info","message":"📊 Online users: 22,29412141","timestamp":"2025-08-06T11:19:10.716Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Brij: ping","timestamp":"2025-08-06T11:19:10.719Z"}
+{"level":"info","message":"🏓 Ping received from Brij: test","timestamp":"2025-08-06T11:19:10.719Z"}
+{"level":"info","message":"🔌 User disconnected: Brij (29412141)","timestamp":"2025-08-06T11:19:48.339Z"}
+{"level":"info","message":"📊 Remaining online users: 22","timestamp":"2025-08-06T11:19:48.339Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-06T11:21:35.283Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-06T11:21:35.283Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:21:53.687Z"}
+{"level":"info","message":"🔌 New connection: WCOvHn9tcxvvQBDBAAAr","timestamp":"2025-08-06T11:21:53.688Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:21:53.688Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-06T11:21:53.689Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-06T11:21:53.689Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-06T11:21:53.690Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-06T11:21:53.692Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-06T11:21:53.693Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:22:19.108Z"}
+{"level":"info","message":"🔌 New connection: P_Jhm3RJkGxHGkp0AAAu","timestamp":"2025-08-06T11:22:19.109Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:22:19.109Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-06T11:22:19.110Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-06T11:22:19.349Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-06T11:22:19.349Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:22:20.164Z"}
+{"level":"info","message":"🔌 New connection: C-5dgUhroafOOvjEAAAx","timestamp":"2025-08-06T11:22:20.165Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:22:20.166Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-06T11:22:20.166Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-06T11:22:20.169Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-06T11:22:20.186Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:22:27.932Z"}
+{"level":"info","message":"🔌 New connection: asB5u0_jzoACmH7xAAA0","timestamp":"2025-08-06T11:22:27.933Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:22:27.934Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-06T11:22:27.934Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-06T11:22:27.935Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-06T11:22:27.935Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-06T11:22:28.292Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-06T11:22:28.293Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-06T11:22:28.451Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-06T11:22:28.452Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:22:29.420Z"}
+{"level":"info","message":"🔌 New connection: dFo2Z2vSVa8wOg7zAAA3","timestamp":"2025-08-06T11:22:29.420Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:22:29.421Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-06T11:22:29.421Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-06T11:22:29.425Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-06T11:22:29.425Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:27:20.380Z"}
+{"level":"info","message":"🔌 New connection: XaebbkIl2Ma_qAN7AAA6","timestamp":"2025-08-06T11:27:20.380Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:27:20.381Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-06T11:27:20.381Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-06T11:27:20.382Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-06T11:27:20.383Z"}
+{"0":{"content":"sdasdas","receiverId":"29412141-4a70-4361-b407-073e70d6b705","tempId":1754479649640},"level":"info","message":"🔔 Socket event from Urvi3: send_message","timestamp":"2025-08-06T11:27:29.641Z"}
+{"level":"info","message":"📤 Message attempt from Urvi3 (22) to user 29412141","timestamp":"2025-08-06T11:27:29.643Z"}
+{"level":"info","message":"📝 Message content: \"sdasdas\"","timestamp":"2025-08-06T11:27:29.644Z"}
+{"level":"info","message":"💾 Saving message to database...","timestamp":"2025-08-06T11:27:29.645Z"}
+{"level":"error","message":"❌ Message processing failed: invalid input syntax for type uuid: \"29412141\"","timestamp":"2025-08-06T11:27:29.781Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-06T11:31:15.513Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-06T11:31:15.514Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:31:16.645Z"}
+{"level":"info","message":"🔌 New connection: 2NKc9kwQuYc_zTQQAAA9","timestamp":"2025-08-06T11:31:16.646Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:31:16.647Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-06T11:31:16.647Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-06T11:31:16.648Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-06T11:31:16.649Z"}
+{"0":{"content":"qqqq","receiverId":"29412141-4a70-4361-b407-073e70d6b705","tempId":1754479886881},"level":"info","message":"🔔 Socket event from Urvi3: send_message","timestamp":"2025-08-06T11:31:26.883Z"}
+{"level":"info","message":"📤 Message attempt from Urvi3 (22) to user 29412141","timestamp":"2025-08-06T11:31:26.885Z"}
+{"level":"info","message":"📝 Message content: \"qqqq\"","timestamp":"2025-08-06T11:31:26.887Z"}
+{"level":"info","message":"💾 Saving message to database...","timestamp":"2025-08-06T11:31:26.888Z"}
+{"level":"error","message":"❌ Message processing failed: invalid input syntax for type uuid: \"29412141\"","timestamp":"2025-08-06T11:31:27.112Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-06T11:31:43.468Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-06T11:31:43.469Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:31:43.984Z"}
+{"level":"info","message":"🔌 New connection: l9S1T1pd9dakEAhZAABA","timestamp":"2025-08-06T11:31:43.986Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-06T11:31:43.986Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-06T11:31:43.987Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-06T11:31:43.988Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-06T11:31:43.989Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-06T11:32:07.478Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-06T11:32:07.479Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-06T12:11:22.547Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-06T12:11:22.549Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-06T12:12:43.197Z"}
+{"level":"info","message":"🔌 New connection: zliGQz_9lgblMchpAABD","timestamp":"2025-08-06T12:12:43.198Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-06T12:12:43.199Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-06T12:12:43.199Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-06T12:12:43.201Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-06T12:12:43.202Z"}
