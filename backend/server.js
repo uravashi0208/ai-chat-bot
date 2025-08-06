@@ -9,7 +9,12 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:5173",
+      "http://localhost:5174", 
+      process.env.CLIENT_URL_2
+    ].filter(Boolean), // Remove any undefined values
     methods: ["GET", "POST"],
     credentials: true
   },

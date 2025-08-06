@@ -27,6 +27,11 @@ export const markMessageAsRead = async (messageId) => {
   return response.data;
 };
 
+export const markMessagesAsRead = async (messageIds) => {
+  const response = await apiClient.patch('/api/chat/messages/read', { messageIds });
+  return response.data;
+};
+
 export const getUsers = async () => {
   const response = await apiClient.get('/api/users');
   // const response = await axios.get(`${API_URL}/api/users`, {

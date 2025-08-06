@@ -27,11 +27,13 @@ export const logoutUser = async () => {
 };
 
 export const getCurrentUser = async () => {
-  const response = await apiClient.get(`/api/users/me`);
-  // const response = await axios.get(`${API_URL}/api/users/me`, {
-  //   withCredentials: true
-  // });
-  return response.data;
+  try {
+    const response = await apiClient.get('/api/users/me');
+    return response.data;
+  } catch (error) {
+    // If we get here, the interceptor already handled token refresh
+    throw error;
+  }
 };
 
 export const refreshAccessToken = async () => {

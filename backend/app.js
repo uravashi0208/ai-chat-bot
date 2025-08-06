@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const chatRoutes = require('./routes/chatRoutes');
@@ -13,7 +14,7 @@ const app = express();
 // Security middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CLIENT_URL || "http://localhost:3000",
+  origin: process.env.CLIENT_URL_2 || "http://localhost:3000" || "http://localhost:5173",
   credentials: true
 }));
 
@@ -27,6 +28,9 @@ app.use(limiter);
 // Body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Cookie parser
+app.use(require('cookie-parser')());
 
 // Request logging
 app.use((req, res, next) => {

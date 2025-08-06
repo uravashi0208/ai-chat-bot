@@ -101,9 +101,20 @@ exports.logout = async (req, res) => {
 
 exports.refreshToken = async (req, res, next) => {
   try {
+    // Check if cookies exist first
+    if (!req.cookies) {
+      return res.status(401).json({ 
+        error: 'No cookies available',
+        message: 'Please login again' 
+      });
+    }
+
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
-      return res.status(401).json({ error: 'No refresh token provided' });
+      return res.status(401).json({ 
+        error: 'No refresh token provided',
+        message: 'Please login again' 
+      });
     }
 
     const { verifyRefreshToken } = require('../config/jwt');
@@ -111,7 +122,10 @@ exports.refreshToken = async (req, res, next) => {
     
     const user = await User.findById(decoded.userId);
     if (!user) {
-      return res.status(401).json({ error: 'Invalid refresh token' });
+      return res.status(401).json({ 
+        error: 'Invalid refresh token',
+        message: 'Please login again' 
+      });
     }
 
     const { generateTokens } = require('../config/jwt');
@@ -119,6 +133,13 @@ exports.refreshToken = async (req, res, next) => {
     
     res.json({ accessToken });
   } catch (error) {
+    // Handle JWT verification errors gracefully
+    if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
+      return res.status(401).json({ 
+        error: 'Invalid refresh token',
+        message: 'Please login again' 
+      });
+    }
     next(error);
   }
 };
