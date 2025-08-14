@@ -10,20 +10,15 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (!user?.id) {
-      console.log('No user or user token, skipping socket connection');
       setSocket(null);
       return;
     }
 
     const token = localStorage.getItem('token');
     if (!token) {
-      console.log('No token found, skipping socket connection');
       setSocket(null);
       return;
     }
-
-    console.log('🔌 Connecting socket for user:', user.username, 'with ID:', user.id);
-    console.log('🔗 Connecting to:', import.meta.env.VITE_API_URL || 'http://localhost:5000');
 
     const newSocket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000', {
       auth: {
@@ -51,10 +46,8 @@ export const SocketProvider = ({ children }) => {
     });
 
     newSocket.on('disconnect', (reason) => {
-      console.log('🔌 Socket disconnected:', reason);
       if (reason === 'io server disconnect') {
         // Server disconnected, reconnect manually
-        console.log('🔄 Reconnecting due to server disconnect...');
         newSocket.connect();
       }
     });
@@ -66,7 +59,6 @@ export const SocketProvider = ({ children }) => {
 
     // Test connection immediately
     newSocket.on('connect', () => {
-      console.log('🧪 Testing socket connection with ping...');
       newSocket.emit('ping', 'test', (response) => {
         console.log('🏓 Socket ping response:', response);
       });
@@ -75,7 +67,6 @@ export const SocketProvider = ({ children }) => {
     setSocket(newSocket);
 
     return () => {
-      console.log('🧹 Cleaning up socket connection');
       if (newSocket) {
         newSocket.removeAllListeners();
         newSocket.disconnect();

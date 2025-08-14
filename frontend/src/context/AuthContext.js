@@ -58,7 +58,6 @@ export const AuthProvider = ({ children }) => {
 
   // Enhanced function to handle authentication errors
   const handleAuthError = useCallback((err) => {
-    console.error('Auth error:', err);
     
     if (err.response?.status === 401) {
       const message = err.response?.data?.message || '';
@@ -223,7 +222,6 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('token', accessToken);
       return accessToken;
     } catch (err) {
-      console.error('Token refresh failed:', err);
       handleTokenExpiration();
       throw err;
     }

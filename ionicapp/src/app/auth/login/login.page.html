@@ -1,0 +1,165 @@
+<ion-content class="neo-dark-bg">
+  <div class="login-wrapper">
+    <!-- Animated Background Elements -->
+    <div class="bg-animated">
+      <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+      </div>
+
+      <!-- Grid Pattern -->
+      <div class="grid-pattern"></div>
+
+      <!-- Gradient Orbs -->
+      <div class="gradient-orb orb-1"></div>
+      <div class="gradient-orb orb-2"></div>
+    </div>
+
+    <!-- Header Section -->
+    <div class="header-section animate-slide-down">
+      <div class="brand-logo">
+        <div class="logo-container">
+          <ion-icon name="chatbubbles" class="logo-icon"></ion-icon>
+          <div class="logo-rings">
+            <div class="ring ring-1"></div>
+            <div class="ring ring-2"></div>
+            <div class="ring ring-3"></div>
+          </div>
+        </div>
+      </div>
+      <h1 class="main-title">Welcome Back</h1>
+      <p class="subtitle">Sign in to continue your conversations</p>
+    </div>
+
+    <!-- Form Section -->
+    <div class="form-section animate-slide-up">
+      <div class="neo-card">
+        <div class="card-glow"></div>
+
+        <div class="form-header">
+          <h2>Sign In</h2>
+          <!-- <div class="progress-dots">
+            <div class="dot active"></div>
+            <div class="dot active"></div>
+            <div class="dot"></div>
+          </div> -->
+        </div>
+
+        <form (ngSubmit)="login()" #loginForm="ngForm" class="neo-form">
+          <!-- Email Field -->
+
+          <div
+            class="field-group animate-field"
+            [style.animation-delay]="'0.2s'"
+          >
+            <div class="input-container" [class.focused]="email">
+              <div class="input-wrapper">
+                <ion-icon name="mail" class="field-icon"></ion-icon>
+                <ion-input
+                  [(ngModel)]="email"
+                  name="email"
+                  type="email"
+                  required
+                  placeholder="Email Address"
+                  class="neo-input"
+                ></ion-input>
+                <div class="input-highlight"></div>
+              </div>
+              <div class="field-line"></div>
+            </div>
+          </div>
+
+          <!-- Password Field -->
+          <div
+            class="field-group animate-field"
+            [style.animation-delay]="'0.2s'"
+          >
+            <div class="input-container" [class.focused]="password">
+              <div class="input-wrapper">
+                <ion-icon name="lock-closed" class="field-icon"></ion-icon>
+                <ion-input
+                  [(ngModel)]="password"
+                  name="password"
+                  type="password"
+                  required
+                  placeholder="Password"
+                  class="neo-input"
+                ></ion-input>
+                <div class="input-highlight"></div>
+              </div>
+              <div class="field-line"></div>
+            </div>
+          </div>
+
+          <!-- Forgot Password -->
+
+          <!-- Login Button -->
+          <div
+            class="button-group animate-field"
+            [style.animation-delay]="'0.4s'"
+          >
+            <ion-button
+              expand="block"
+              type="submit"
+              class="neo-button primary-btn"
+              [disabled]="!loginForm.form.valid || isLoading"
+            >
+              <div class="btn-content">
+                @if (isLoading) {
+                <ion-spinner name="crescent" class="btn-spinner"></ion-spinner>
+                <span>Signing In...</span>
+                } @else {
+                <ion-icon name="log-in" class="btn-icon"></ion-icon>
+                <span>Sign In</span>
+                <div class="btn-arrow">
+                  <ion-icon name="chevron-forward"></ion-icon>
+                </div>
+                }
+              </div>
+              <div class="btn-glow"></div>
+            </ion-button>
+          </div>
+
+          <!-- Error Message -->
+          @if (error) {
+          <div class="error-card animate-bounce-in">
+            <div class="error-content">
+              <ion-icon name="warning" class="error-icon"></ion-icon>
+              <span>{{ error }}</span>
+            </div>
+          </div>
+          }
+        </form>
+
+        <div
+          class="forgot-section animate-field"
+          [style.animation-delay]="'0.3s'"
+        >
+          <ion-button fill="clear" class="forgot-link">
+            <ion-icon name="help-circle-outline" slot="start"></ion-icon>
+            <span>Forgot Password?</span>
+          </ion-button>
+        </div>
+
+        <!-- Register Link -->
+        <div
+          class="footer-section animate-field"
+          [style.animation-delay]="'0.6s'"
+        >
+          <p class="register-prompt">Don't have an account?</p>
+          <ion-button
+            fill="clear"
+            class="register-link-btn"
+            (click)="goToRegister()"
+          >
+            <span>Create Account</span>
+            <ion-icon name="arrow-forward" slot="end"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

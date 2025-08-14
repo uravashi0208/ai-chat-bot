@@ -1,0 +1,188 @@
+<ion-header class="modern-header">
+  <ion-toolbar color="primary">
+    <ion-title>
+      <div class="header-title">
+        <ion-icon name="chatbubbles" class="header-icon"></ion-icon>
+        <span>ChatVibe</span>
+      </div>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="logout()" class="logout-btn">
+        <ion-icon name="log-out-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="gradient-bg-chat">
+  <div class="dashboard-container">
+    <!-- Welcome Section -->
+    <div class="welcome-section fade-in-up">
+      <div class="welcome-card glass-card">
+        <div class="welcome-content">
+          <h2>Welcome back! 👋</h2>
+          <p>Ready to continue your conversations?</p>
+        </div>
+        <div class="stats">
+          <div class="stat-item">
+            <span class="stat-number">{{ users.length }}</span>
+            <span class="stat-label">Contacts</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getTotalUnreadCount() }}</span>
+            <span class="stat-label">Unread</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Refresh Control -->
+    <ion-refresher slot="fixed" (ionRefresh)="loadUsers($event)">
+      <ion-refresher-content
+        pulling-icon="arrow-down-outline"
+        pulling-text="Pull to refresh conversations"
+        refreshing-spinner="dots"
+        refreshing-text="Refreshing..."
+      >
+      </ion-refresher-content>
+    </ion-refresher>
+
+    <!-- Loading State -->
+    @if (loading) {
+    <div class="loading-container fade-in-up">
+      <div class="loading-content glass-card">
+        <div class="loading-animation">
+          <div class="pulse-loader">
+            <div class="pulse-dot"></div>
+            <div class="pulse-dot"></div>
+            <div class="pulse-dot"></div>
+          </div>
+        </div>
+        <h3>Loading conversations...</h3>
+        <p>Just a moment while we fetch your chats</p>
+      </div>
+    </div>
+    }
+
+    <!-- Error State -->
+    @if (error) {
+    <div class="error-container fade-in-up">
+      <div class="error-content glass-card">
+        <ion-icon name="warning-outline" class="error-icon"></ion-icon>
+        <h3>Something went wrong</h3>
+        <p>{{ error }}</p>
+        <ion-button
+          fill="clear"
+          class="retry-btn modern-btn"
+          (click)="loadUsers()"
+        >
+          <ion-icon name="refresh-outline" slot="start"></ion-icon>
+          Try Again
+        </ion-button>
+      </div>
+    </div>
+    }
+
+    <!-- Empty State -->
+    @if (!loading && !error && users.length === 0) {
+    <div class="empty-state fade-in-up">
+      <div class="empty-content glass-card">
+        <div class="empty-animation">
+          <ion-icon
+            name="people-outline"
+            class="empty-icon floating"
+          ></ion-icon>
+        </div>
+        <h3>No conversations yet</h3>
+        <p>
+          Start connecting with other users and your chats will appear here!
+        </p>
+        <ion-button
+          fill="clear"
+          class="start-chat-btn modern-btn"
+          (click)="loadUsers()"
+        >
+          <ion-icon name="add-outline" slot="start"></ion-icon>
+          Find People
+        </ion-button>
+      </div>
+    </div>
+    }
+
+    <!-- Conversations List -->
+    @if (!loading && !error && users.length > 0) {
+    <div class="conversations-section">
+      <div class="section-header fade-in-up">
+        <h3>Recent Conversations</h3>
+        <ion-button fill="clear" size="small" class="filter-btn">
+          <ion-icon name="filter-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </div>
+
+      <div class="conversations-list">
+        @for (user of users; track user.id; let i = $index) {
+        <div
+          class="conversation-card glass-card fade-in-up"
+          [style.animation-delay]="(i * 0.1) + 's'"
+          (click)="openChat(user)"
+        >
+          <div class="card-content">
+            <div class="user-avatar">
+              <div
+                class="avatar-circle"
+                [style.background]="getAvatarGradient(user.username)"
+              >
+                {{ user.username.charAt(0).toUpperCase() }}
+              </div>
+              @if (user.online) {
+              <div class="online-indicator pulse-glow"></div>
+              }
+            </div>
+
+            <div class="conversation-info">
+              <div class="user-header">
+                <h4 class="username">{{ user.username }}</h4>
+                @if (user.online) {
+                <span class="status-badge online">Online</span>
+                } @else if (user.last_seen_at) {
+                <span class="status-badge offline">
+                  {{ formatLastSeen(user.last_seen_at) }}
+                </span>
+                }
+              </div>
+
+              <p class="last-message">
+                @if (user.lastMessage) {
+                <span class="message-preview"
+                  >{{ getLastMessagePreview(user) }}</span
+                >
+                } @else {
+                <span class="no-messages">No messages yet</span>
+                }
+              </p>
+            </div>
+
+            <div class="conversation-meta">
+              @if (user.lastMessage) {
+              <div class="timestamp">
+                {{ formatLastMessageTime(user.lastMessage.sent_at) }}
+              </div>
+              } @if (user.unreadCount > 0) {
+              <div class="unread-badge pulse-glow">
+                {{ user.unreadCount > 99 ? '99+' : user.unreadCount }}
+              </div>
+              }
+
+              <ion-icon
+                name="chevron-forward-outline"
+                class="chevron-icon"
+              ></ion-icon>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+    }
+  </div>
+</ion-content>

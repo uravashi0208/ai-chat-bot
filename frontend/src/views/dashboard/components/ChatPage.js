@@ -131,7 +131,6 @@ const ChatPage = () => {
       const usersList = await getUsers();
       setUsers(usersList);
     } catch (err) {
-      console.error("Error fetching users:", err);
       error('Failed to load users. Please refresh the page.', {
         autoHideDuration: 4000
       });
@@ -143,8 +142,6 @@ const ChatPage = () => {
     if (users.length === 0) return;
     
     try {
-      console.log('📨 Fetching conversation previews...');
-      
       // Limit concurrent requests to avoid overwhelming the server
       const maxConcurrent = 3;
       const usersToFetch = users.slice(0, 10); // Limit to first 10 users for performance
@@ -158,7 +155,6 @@ const ChatPage = () => {
             const userMessages = await getMessages(userItem.id);
             return userMessages.slice(-5); // Keep only last 5 messages per conversation
           } catch (err) {
-            console.warn(`Failed to fetch messages for user ${userItem.username}:`, err);
             return [];
           }
         });
@@ -190,7 +186,6 @@ const ChatPage = () => {
         }
       }
       
-      console.log('✅ Conversation previews loaded');
     } catch (err) {
       console.error("Error fetching conversation previews:", err);
     }
@@ -203,7 +198,6 @@ const ChatPage = () => {
       const chatMessages = await getMessages(selectedUser.id);
       setMessages(chatMessages);
     } catch (err) {
-      console.error("Error fetching messages:", err);
       error(`Failed to load messages with ${selectedUser.username}`, {
         autoHideDuration: 4000
       });
@@ -248,19 +242,16 @@ const ChatPage = () => {
 
     socket.on('connect', () => {
       setConnectionStatus('connected');
-      console.log('🔗 Socket connected');
       success('✨ Connected to chat server!', { autoHideDuration: 2000 });
     });
 
     socket.on('disconnect', () => {
       setConnectionStatus('disconnected');
-      console.log('🔌 Socket disconnected');
       warning('⚡ Connection lost. Trying to reconnect...', { autoHideDuration: 3000 });
     });
 
     socket.on('connect_error', () => {
       setConnectionStatus('error');
-      console.log('❌ Socket connection error');
       error('❌ Connection failed. Please check your internet connection.', { autoHideDuration: 4000 });
     });
 
@@ -276,22 +267,15 @@ const ChatPage = () => {
   // WebSocket handling
   useEffect(() => {
     if (!socket || !user?.id) {
-      console.log('⚠️ Socket or user not available for message handling');
       return;
     }
 
     const handleNewMessage = (message) => {
-      console.log('📩 Received message from socket:', message);
-      console.log('👤 Current user ID:', user.id);
-      console.log('💬 Current selected user:', selectedUser?.id);
-      console.log('📤 Message sender:', message.sender_id);
-      console.log('📥 Message receiver:', message.receiver_id);
       
       setMessages(prev => {
         // Check if message already exists to prevent duplicates
         const exists = prev.some(msg => msg.id === message.id);
         if (exists) {
-          console.log('⚠️ Duplicate message prevented:', message.id);
           return prev;
         }
         
@@ -302,7 +286,6 @@ const ChatPage = () => {
         );
         
         if (isForCurrentUser) {
-          console.log('✅ Message is for current user, adding to messages');
           const newMessages = [...prev, message].sort((a, b) => 
             new Date(a.sent_at) - new Date(b.sent_at)
           );
@@ -313,14 +296,8 @@ const ChatPage = () => {
             (message.sender_id === user.id && message.receiver_id === selectedUser.id)
           );
           
-          if (isForCurrentConversation) {
-            console.log('🎯 Message is for current conversation - UI will update');
-          }
-          
           return newMessages;
         }
-        
-        console.log('⏭️ Message not for current user, ignoring');
         return prev;
       });
       
@@ -330,27 +307,22 @@ const ChatPage = () => {
       }, 100);
     };
 
-    console.log('🔗 Setting up socket listeners for user:', user.id);
     socket.on('receive_message', handleNewMessage);
     
     // Add connection status listeners
     socket.on('connect', () => {
-      console.log('🟢 Socket connected in ChatPage');
       setConnectionStatus('connected');
     });
     
     socket.on('disconnect', () => {
-      console.log('🔴 Socket disconnected in ChatPage');
       setConnectionStatus('disconnected');
     });
     
     socket.on('connect_error', () => {
-      console.log('❌ Socket connection error in ChatPage');
       setConnectionStatus('error');
     });
     
     return () => {
-      console.log('🧹 Cleaning up socket listeners');
       socket.off('receive_message', handleNewMessage);
       socket.off('connect');
       socket.off('disconnect');
@@ -387,7 +359,6 @@ const ChatPage = () => {
     const currentInput = inputValue;
     const tempId = Date.now();
     
-    console.log('📤 Sending message:', currentInput, 'to user:', selectedUser.id);
 
     const tempMessage = {
       id: tempId,
@@ -403,31 +374,25 @@ const ChatPage = () => {
 
     try {
       if (socket && socket.connected) {
-        console.log('🔌 Using socket connection');
         socket.emit('send_message', {
           receiverId: selectedUser.id,
           content: currentInput,
           tempId
         }, (response) => {
-          console.log('📨 Socket response:', response);
           if (response?.success) {
             setMessages(prev => 
               prev.map(msg => 
                 msg.id === tempId ? { ...response.message, sending: false } : msg
               )
             );
-            console.log('✅ Message sent via socket successfully');
           } else {
-            console.error('❌ Socket send failed:', response?.error);
             fallbackToAPI(currentInput);
           }
         });
       } else {
-        console.log('🌐 Socket not available, using HTTP API');
         fallbackToAPI(currentInput);
       }
     } catch (err) {
-      console.error("❌ Error in handleSend:", err);
       setMessages(prev => prev.filter(msg => msg.id !== tempId));
       setInputValue(currentInput);
       error('Failed to send message. Please try again.', {
@@ -437,7 +402,6 @@ const ChatPage = () => {
 
     async function fallbackToAPI(messageContent) {
       try {
-        console.log('🔄 Falling back to HTTP API');
         const newMessage = await sendMessage({
           receiverId: selectedUser.id,
           content: messageContent
@@ -447,9 +411,7 @@ const ChatPage = () => {
             msg.id === tempId ? { ...newMessage, sending: false } : msg
           )
         );
-        console.log('✅ Message sent via HTTP API successfully');
       } catch (apiError) {
-        console.error("❌ HTTP API fallback failed:", apiError);
         setMessages(prev => prev.filter(msg => msg.id !== tempId));
         setInputValue(messageContent);
         error('Message delivery failed. Please check your connection and try again.', {

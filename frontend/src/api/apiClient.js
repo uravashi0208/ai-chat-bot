@@ -48,7 +48,6 @@ apiClient.interceptors.response.use(
         isRefreshing = true;
         
         try {
-          console.log('🔄 Attempting to refresh token...');
           const refreshTokenResponse = await axios.post(
             `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/refresh-token`, 
             {},
@@ -62,14 +61,11 @@ apiClient.interceptors.response.use(
           apiClient.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
           originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
           
-          console.log('✅ Token refreshed successfully');
           onRefreshDone();
           isRefreshing = false;
           
           return apiClient(originalRequest);
         } catch (refreshError) {
-          console.error('❌ Token refresh failed:', refreshError.response?.data?.message || refreshError.message);
-          
           // Clear tokens and redirect
           localStorage.removeItem('token');
           localStorage.removeItem('rememberToken');
@@ -101,14 +97,8 @@ apiClient.interceptors.response.use(
       });
     }
 
-    // Handle 403 Forbidden errors
-    if (error.response?.status === 403) {
-      console.warn('🚫 Access forbidden:', error.response?.data?.message);
-    }
-
     // Handle network errors
     if (!error.response) {
-      console.error('🌐 Network error:', error.message);
       const networkError = new Error('Network connection failed. Please check your internet connection.');
       networkError.isNetworkError = true;
       return Promise.reject(networkError);
@@ -116,7 +106,6 @@ apiClient.interceptors.response.use(
 
     // Handle server errors (5xx)
     if (error.response?.status >= 500) {
-      console.error('🔧 Server error:', error.response?.data?.message || 'Internal server error');
       const serverError = new Error('Server is temporarily unavailable. Please try again later.');
       serverError.isServerError = true;
       return Promise.reject(serverError);

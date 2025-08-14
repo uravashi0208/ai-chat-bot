@@ -1,0 +1,48 @@
+<ion-app>
+  <!-- Beautiful Splash Screen -->
+  <div
+    class="splash-screen"
+    *ngIf="showSplash"
+    [class.fade-out]="splashAnimationComplete"
+  >
+    <!-- Animated Background -->
+    <div class="splash-bg">
+      <div class="bg-particles">
+        <div class="particle particle-1"></div>
+        <div class="particle particle-2"></div>
+        <div class="particle particle-3"></div>
+        <div class="particle particle-4"></div>
+        <div class="particle particle-5"></div>
+        <div class="particle particle-6"></div>
+      </div>
+    </div>
+
+    <!-- Logo and Branding -->
+    <div class="splash-content">
+      <div class="logo-container">
+        <div class="logo-circle pulse-grow">
+          <ion-icon name="chatbubbles"></ion-icon>
+        </div>
+        <h1 class="app-name slide-up">ChatVibe</h1>
+        <p class="app-tagline slide-up-delayed">Connect • Chat • Vibe</p>
+      </div>
+
+      <!-- Loading Animation -->
+      <div class="loading-animation">
+        <div class="loading-dots">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Version Info -->
+    <div class="splash-footer">
+      <p>Powered by ChatVibe v1.0</p>
+    </div>
+  </div>
+
+  <!-- Main App Router -->
+  <ion-router-outlet></ion-router-outlet>
+</ion-app>

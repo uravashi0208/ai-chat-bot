@@ -106,7 +106,6 @@ const AuthRegister = ({ title, subtitle, subtext }) => {
         navigate('/dashboard', { replace: true });
       }, 2500);
     } catch (err) {
-      console.error(err);
       // Show error toast with specific error messages
       const errorMessage = err.response?.data?.message || 'Registration failed. Please try again.';
       

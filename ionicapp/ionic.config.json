@@ -1,7 +1,7 @@
 {
-  "name": "chat-app-ionic",
+  "name": "ionicapp",
   "integrations": {
     "capacitor": {}
   },
-  "type": "react"
+  "type": "angular"
 }

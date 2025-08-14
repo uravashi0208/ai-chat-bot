@@ -1,0 +1,191 @@
+<ion-header class="chat-header">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button
+        default-href="/dashboard"
+        color="light"
+        class="back-btn"
+      ></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>
+      @if (selectedUser) {
+      <div class="header-user-info">
+        <div
+          class="user-avatar-header"
+          [style.background]="getAvatarGradient(selectedUser.username)"
+        >
+          {{ selectedUser.username.charAt(0).toUpperCase() }}
+        </div>
+        <div class="user-details">
+          <h3>{{ selectedUser.username }}</h3>
+          @if (selectedUser.online) {
+          <p class="status online">
+            <ion-icon name="radio-button-on"></ion-icon>
+            Online now
+          </p>
+          } @else if (selectedUser.lastSeen) {
+          <p class="status offline">
+            {{ formatLastSeen(selectedUser.lastSeen) }}
+          </p>
+          } @else {
+          <p class="status offline">Offline</p>
+          }
+        </div>
+      </div>
+      } @else {
+      <span>Chat</span>
+      }
+    </ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button fill="clear" class="more-btn">
+        <ion-icon name="ellipsis-vertical" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="gradient-bg-chat" #content>
+  <div class="chat-container">
+    @if (selectedUser) {
+    <div class="chat-area">
+      <!-- Messages Container -->
+      <div class="messages-container glass-scrollbar-thin">
+        @if (messagesLoading) {
+        <div class="loading-messages fade-in-up">
+          <div class="loading-animation">
+            <div class="message-loader">
+              <div class="loader-bubble"></div>
+              <div class="loader-bubble"></div>
+              <div class="loader-bubble"></div>
+            </div>
+          </div>
+          <h4>Loading conversation...</h4>
+          <p>Fetching your chat history</p>
+        </div>
+        } @else if (messages.length === 0) {
+        <div class="no-messages fade-in-up">
+          <div class="empty-chat-animation">
+            <ion-icon
+              name="chatbubbles-outline"
+              class="empty-icon floating"
+            ></ion-icon>
+          </div>
+          <h4>Start your conversation</h4>
+          <p>Send a message to {{ selectedUser.username }} to get started!</p>
+        </div>
+        } @else {
+        <!-- Messages List -->
+        <div class="messages-list">
+          @for (message of messages; track message.id; let i = $index) {
+          <div
+            class="message-wrapper fade-in-up"
+            [style.animation-delay]="(i * 0.05) + 's'"
+            [ngClass]="{
+                 'sent': message.sender_id === currentUser.id.toString(), 
+                 'received': message.sender_id !== currentUser.id.toString()
+               }"
+          >
+            <div class="message-bubble">
+              <div class="message-content">{{ message.content }}</div>
+              <div class="message-meta">
+                <span class="message-time"
+                  >{{ formatMessageTime(message.sent_at) }}</span
+                >
+                @if (message.sender_id === currentUser.id.toString()) {
+                <div class="message-status">
+                  @if (message.sending) {
+                  <ion-icon
+                    name="time-outline"
+                    class="status-icon sending"
+                  ></ion-icon>
+                  } @else {
+                  <ion-icon
+                    name="checkmark-done-outline"
+                    class="status-icon delivered"
+                  ></ion-icon>
+                  }
+                </div>
+                }
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </div>
+
+      <!-- Typing Indicator -->
+      @if (isTyping) {
+      <div class="typing-indicator fade-in-up">
+        <div
+          class="typing-avatar"
+          [style.background]="getAvatarGradient(selectedUser.username)"
+        >
+          {{ selectedUser.username.charAt(0).toUpperCase() }}
+        </div>
+        <div class="typing-bubble">
+          <div class="typing-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+      }
+
+      <!-- Message Input Area -->
+      <div class="input-area glass-card">
+        <div class="input-container">
+          <div class="input-field">
+            <ion-textarea
+              [(ngModel)]="inputValue"
+              placeholder="Type your message..."
+              rows="1"
+              auto-grow="true"
+              maxlength="1000"
+              (ionInput)="onTyping()"
+              (ionFocus)="onInputFocus()"
+              (ionBlur)="onInputBlur()"
+              class="message-input"
+            ></ion-textarea>
+          </div>
+
+          <div class="input-actions">
+            <ion-button
+              fill="clear"
+              class="send-btn modern-btn"
+              (click)="sendMessage()"
+              [disabled]="!inputValue.trim()"
+            >
+              @if (inputValue.trim()) {
+              <ion-icon name="send" slot="icon-only"></ion-icon>
+              } @else {
+              <ion-icon name="add" slot="icon-only"></ion-icon>
+              }
+            </ion-button>
+          </div>
+        </div>
+      </div>
+    </div>
+    } @else {
+    <!-- User Not Found -->
+    <div class="error-screen fade-in-up">
+      <div class="error-content glass-card">
+        <ion-icon name="warning-outline" class="error-icon"></ion-icon>
+        <h3>User Not Found</h3>
+        <p>Could not load user data. Please try again.</p>
+        <ion-button
+          fill="clear"
+          class="retry-btn modern-btn"
+          (click)="goBack()"
+        >
+          <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+          Go Back
+        </ion-button>
+      </div>
+    </div>
+    }
+  </div>
+</ion-content>

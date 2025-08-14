@@ -64,13 +64,14 @@ module.exports = {
   },
 
   async updateOnlineStatus(id, online) {
-  const { data, error } = await supabase
-    .from('users')
-    .update({ online })
-    .eq('id', id)
-    .select();
-  
-  if (error) throw error;
-  return data[0];
-}
+    const { data, error } = await supabase
+      .from('users')
+      .update({ online })
+      .eq('id', id)
+      .select();
+    
+    if (error) throw error;
+    return data[0];
+  },
+
 };

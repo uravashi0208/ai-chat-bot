@@ -21,7 +21,6 @@ export const logoutUser = async () => {
     });
     return response.data;
   } catch (error) {
-    console.error('Logout error:', error);
     throw error.response?.data || { error: 'Logout failed' };
   }
 };

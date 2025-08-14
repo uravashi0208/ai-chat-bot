@@ -2315,3 +2315,164 @@
 {"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-06T12:12:43.199Z"}
 {"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-06T12:12:43.201Z"}
 {"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-06T12:12:43.202Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-06T12:16:14.332Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-06T12:16:14.333Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-11T10:00:52.768Z"}
+{"level":"info","message":"🔌 New connection: CZHQ22ih3vwGus9NAAAB","timestamp":"2025-08-11T10:00:52.773Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-11T10:00:52.774Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-11T10:00:52.775Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-11T10:00:52.777Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-11T10:00:52.779Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-11T10:01:13.443Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-11T10:01:13.445Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-11T10:02:06.092Z"}
+{"level":"info","message":"🔌 New connection: WzL7HSLWWk983CkuAAAE","timestamp":"2025-08-11T10:02:06.093Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-11T10:02:06.093Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-11T10:02:06.094Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-11T10:02:06.095Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-11T10:02:06.095Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-11T10:03:23.458Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-11T10:03:23.459Z"}
+{"level":"error","message":"❌ Socket auth error: jwt expired","timestamp":"2025-08-11T11:43:59.023Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-11T13:01:00.583Z"}
+{"level":"info","message":"🔌 New connection: 2AaGCMRH9DGZhHdyAAAK","timestamp":"2025-08-11T13:01:00.584Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-11T13:01:00.585Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-11T13:01:00.585Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-11T13:01:00.586Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-11T13:01:00.587Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-11T13:03:19.214Z"}
+{"level":"info","message":"🔌 New connection: hcIJekU5GsWHS63MAAAB","timestamp":"2025-08-11T13:03:19.218Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-11T13:03:19.219Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-11T13:03:19.220Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-11T13:03:21.256Z"}
+{"level":"info","message":"🔌 New connection: 42Im50Ry7XC0uR99AAAB","timestamp":"2025-08-11T13:03:21.260Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-11T13:03:21.261Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-11T13:03:21.262Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-11T13:03:29.235Z"}
+{"level":"info","message":"🔌 New connection: yda95s-YeFcRXqMZAAAB","timestamp":"2025-08-11T13:03:29.240Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-11T13:03:29.241Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-11T13:03:29.242Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-11T13:04:26.541Z"}
+{"level":"info","message":"🔌 New connection: jIrIuajJUXsCnTZ2AAAB","timestamp":"2025-08-11T13:04:26.545Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-11T13:04:26.547Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-11T13:04:26.547Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:04:55.999Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-11T13:09:18.232Z"}
+{"level":"info","message":"🔌 New connection: FeEg88cimfCbZ8I8AAAB","timestamp":"2025-08-11T13:09:18.237Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-11T13:09:18.238Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-11T13:09:18.239Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:11:09.494Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:18:59.601Z"}
+{"level":"error","timestamp":"2025-08-11T13:19:00.784Z"}
+{"level":"error","timestamp":"2025-08-11T13:19:00.912Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:19:06.333Z"}
+{"level":"error","timestamp":"2025-08-11T13:19:07.336Z"}
+{"level":"error","timestamp":"2025-08-11T13:19:07.500Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:44:10.753Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:44:21.511Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:44:40.698Z"}
+{"level":"error","timestamp":"2025-08-11T13:44:43.216Z"}
+{"level":"error","timestamp":"2025-08-11T13:44:43.332Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:44:53.194Z"}
+{"level":"error","timestamp":"2025-08-11T13:44:54.889Z"}
+{"level":"error","timestamp":"2025-08-11T13:44:55.003Z"}
+{"level":"error","message":"❌ Socket auth error: jwt expired","timestamp":"2025-08-11T13:45:02.241Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-11T13:45:58.772Z"}
+{"level":"info","message":"🔌 New connection: kXrWbdewq3TtqoAZAAAE","timestamp":"2025-08-11T13:45:58.781Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-11T13:45:58.784Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-11T13:45:58.787Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-11T13:45:58.793Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-11T13:45:58.798Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:50:41.482Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-11T13:51:00.209Z"}
+{"level":"info","message":"🔌 New connection: gOtCJfwd10Wlk3l4AAAB","timestamp":"2025-08-11T13:51:00.213Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-11T13:51:00.214Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-11T13:51:00.214Z"}
+{"level":"error","timestamp":"2025-08-11T13:51:06.581Z"}
+{"level":"error","timestamp":"2025-08-11T13:51:06.791Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:51:42.718Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:51:47.873Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-11T13:52:22.210Z"}
+{"level":"info","message":"🔌 New connection: F7qqz-eh4S0XdOh2AAAB","timestamp":"2025-08-11T13:52:22.214Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-11T13:52:22.215Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-11T13:52:22.216Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:52:26.617Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:53:28.557Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:55:37.057Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:56:14.193Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:56:14.950Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:56:25.584Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-11T13:58:01.132Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-11T13:58:01.133Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-11T13:58:04.487Z"}
+{"level":"info","message":"🔌 New connection: iASCX6-MjpjMiZHOAAAW","timestamp":"2025-08-11T13:58:04.488Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-11T13:58:04.488Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-11T13:58:04.489Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-11T13:58:04.490Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-11T13:58:04.491Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T14:00:48.263Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T14:01:00.811Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T14:01:42.727Z"}
+{"level":"info","message":"🔌 User disconnected: Urvi3 (22)","timestamp":"2025-08-11T14:19:01.304Z"}
+{"level":"info","message":"📊 Remaining online users: ","timestamp":"2025-08-11T14:19:01.304Z"}
+{"level":"info","message":"✅ User authenticated: Urvi3 (ID: 22)","timestamp":"2025-08-11T14:19:04.911Z"}
+{"level":"info","message":"🔌 New connection: Br9-nSYYge9AvRFtAAAi","timestamp":"2025-08-11T14:19:04.912Z"}
+{"level":"info","message":"👤 User connected: Urvi3 (ID: 22)","timestamp":"2025-08-11T14:19:04.913Z"}
+{"level":"info","message":"📊 Online users: 22","timestamp":"2025-08-11T14:19:04.913Z"}
+{"0":"test","level":"info","message":"🔔 Socket event from Urvi3: ping","timestamp":"2025-08-11T14:19:04.914Z"}
+{"level":"info","message":"🏓 Ping received from Urvi3: test","timestamp":"2025-08-11T14:19:04.915Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T14:30:36.156Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T14:44:13.508Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T14:44:31.993Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T14:47:55.709Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:11:13.319Z"}
+{"level":"error","message":"❌ Socket auth error: jwt expired","timestamp":"2025-08-11T15:16:14.221Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:22:59.422Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:23:26.002Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:26:42.679Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:26:51.653Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:26:56.321Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:27:03.093Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:27:10.877Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:29:16.695Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:36:34.420Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:36:39.084Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:36:42.279Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:36:44.259Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:36:47.513Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:36:50.167Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:36:52.074Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:36:56.209Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:00.612Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:02.609Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:14.279Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:21.544Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:25.794Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:27.676Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:31.037Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:33.083Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:39.376Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:40.967Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:45.240Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:50.063Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:52.593Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:54.905Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:39:33.302Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:44:00.848Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:45:36.099Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:46:05.684Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:46:37.306Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:46:50.184Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:46:53.501Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:46:58.868Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:47:01.721Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:54:18.264Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:54:46.579Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:55:00.934Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:55:13.247Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:55:32.368Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:55:37.033Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:56:32.784Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:58:07.482Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T16:27:43.420Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T16:32:04.953Z"}

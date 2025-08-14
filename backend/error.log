@@ -382,3 +382,90 @@
 {"level":"error","message":"❌ Message processing failed: invalid input syntax for type uuid: \"29412141\"","timestamp":"2025-08-06T11:02:28.395Z"}
 {"level":"error","message":"❌ Message processing failed: invalid input syntax for type uuid: \"29412141\"","timestamp":"2025-08-06T11:27:29.781Z"}
 {"level":"error","message":"❌ Message processing failed: invalid input syntax for type uuid: \"29412141\"","timestamp":"2025-08-06T11:31:27.112Z"}
+{"level":"error","message":"❌ Socket auth error: jwt expired","timestamp":"2025-08-11T11:43:59.023Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:04:55.999Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:11:09.494Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:18:59.601Z"}
+{"level":"error","timestamp":"2025-08-11T13:19:00.784Z"}
+{"level":"error","timestamp":"2025-08-11T13:19:00.912Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:19:06.333Z"}
+{"level":"error","timestamp":"2025-08-11T13:19:07.336Z"}
+{"level":"error","timestamp":"2025-08-11T13:19:07.500Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:44:10.753Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:44:21.511Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:44:40.698Z"}
+{"level":"error","timestamp":"2025-08-11T13:44:43.216Z"}
+{"level":"error","timestamp":"2025-08-11T13:44:43.332Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:44:53.194Z"}
+{"level":"error","timestamp":"2025-08-11T13:44:54.889Z"}
+{"level":"error","timestamp":"2025-08-11T13:44:55.003Z"}
+{"level":"error","message":"❌ Socket auth error: jwt expired","timestamp":"2025-08-11T13:45:02.241Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:50:41.482Z"}
+{"level":"error","timestamp":"2025-08-11T13:51:06.581Z"}
+{"level":"error","timestamp":"2025-08-11T13:51:06.791Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:51:42.718Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:51:47.873Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:52:26.617Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:53:28.557Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:55:37.057Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:56:14.193Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:56:14.950Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T13:56:25.584Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T14:00:48.263Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T14:01:00.811Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T14:01:42.727Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T14:30:36.156Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T14:44:13.508Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T14:44:31.993Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T14:47:55.709Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:11:13.319Z"}
+{"level":"error","message":"❌ Socket auth error: jwt expired","timestamp":"2025-08-11T15:16:14.221Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:22:59.422Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:23:26.002Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:26:42.679Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:26:51.653Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:26:56.321Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:27:03.093Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:27:10.877Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:29:16.695Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:36:34.420Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:36:39.084Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:36:42.279Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:36:44.259Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:36:47.513Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:36:50.167Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:36:52.074Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:36:56.209Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:00.612Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:02.609Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:14.279Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:21.544Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:25.794Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:27.676Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:31.037Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:33.083Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:39.376Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:40.967Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:45.240Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:50.063Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:52.593Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:37:54.905Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:39:33.302Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:44:00.848Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:45:36.099Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:46:05.684Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:46:37.306Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:46:50.184Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:46:53.501Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:46:58.868Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:47:01.721Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:54:18.264Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:54:46.579Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:55:00.934Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:55:13.247Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:55:32.368Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:55:37.033Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:56:32.784Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T15:58:07.482Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T16:27:43.420Z"}
+{"level":"error","message":"❌ No token provided","timestamp":"2025-08-11T16:32:04.953Z"}

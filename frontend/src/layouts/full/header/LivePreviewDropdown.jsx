@@ -164,7 +164,6 @@ export default function LivePreviewDropdown() {
       >
         {
           MenuItems.map((item, index) => {
-            console.log(item, "test");
             return (
               <a target='_black' key={index} href={item.href}>
                 <MenuItem sx={{ gap: '12px', borderRadius: '7px', fontSize: '16px', color: '#000c29', padding: '12px 18px', ":hover": { backgroundColor: "#000c290d" } }} onClick={handleClose} disableRipple>

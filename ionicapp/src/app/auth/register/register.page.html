@@ -1,0 +1,231 @@
+<ion-content class="neo-dark-bg">
+  <div class="register-wrapper">
+    <!-- Animated Background Elements -->
+    <div class="bg-animated">
+      <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+      </div>
+
+      <!-- Grid Pattern -->
+      <div class="grid-pattern"></div>
+
+      <!-- Gradient Orbs -->
+      <div class="gradient-orb orb-1"></div>
+      <div class="gradient-orb orb-2"></div>
+    </div>
+
+    <!-- Header Section -->
+    <div class="header-section animate-slide-down">
+      <div class="brand-logo">
+        <div class="logo-container">
+          <ion-icon name="chatbubbles" class="logo-icon"></ion-icon>
+          <div class="logo-rings">
+            <div class="ring ring-1"></div>
+            <div class="ring ring-2"></div>
+            <div class="ring ring-3"></div>
+          </div>
+        </div>
+      </div>
+      <h1 class="main-title">Join the Future</h1>
+      <p class="subtitle">Create your account and connect with millions</p>
+    </div>
+
+    <!-- Form Section -->
+    <div class="form-section animate-slide-up">
+      <div class="neo-card">
+        <div class="card-glow"></div>
+
+        <div class="form-header">
+          <h2>Create Account</h2>
+          <!-- <div class="progress-dots">
+            <div class="dot active"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+          </div> -->
+        </div>
+
+        <form (ngSubmit)="register()" #registerForm="ngForm" class="neo-form">
+          <!-- Username Field -->
+          <div
+            class="field-group animate-field"
+            [style.animation-delay]="'0.1s'"
+          >
+            <div class="input-container" [class.focused]="username">
+              <div class="input-wrapper">
+                <ion-icon name="person" class="field-icon"></ion-icon>
+                <ion-input
+                  [(ngModel)]="username"
+                  name="username"
+                  type="text"
+                  required
+                  placeholder="Username"
+                  class="neo-input"
+                ></ion-input>
+                <div class="input-highlight"></div>
+              </div>
+              <div class="field-line"></div>
+            </div>
+          </div>
+
+          <!-- Email Field -->
+          <div
+            class="field-group animate-field"
+            [style.animation-delay]="'0.2s'"
+          >
+            <div class="input-container" [class.focused]="email">
+              <div class="input-wrapper">
+                <ion-icon name="mail" class="field-icon"></ion-icon>
+                <ion-input
+                  [(ngModel)]="email"
+                  name="email"
+                  type="email"
+                  required
+                  placeholder="Email Address"
+                  class="neo-input"
+                ></ion-input>
+                <div class="input-highlight"></div>
+              </div>
+              <div class="field-line"></div>
+            </div>
+          </div>
+
+          <!-- Password Field -->
+          <div
+            class="field-group animate-field"
+            [style.animation-delay]="'0.3s'"
+          >
+            <div class="input-container" [class.focused]="password">
+              <div class="input-wrapper">
+                <ion-icon name="lock-closed" class="field-icon"></ion-icon>
+                <ion-input
+                  [(ngModel)]="password"
+                  name="password"
+                  type="password"
+                  required
+                  placeholder="Password"
+                  class="neo-input"
+                ></ion-input>
+                <div class="input-highlight"></div>
+              </div>
+              <div class="field-line"></div>
+            </div>
+
+            <!-- Enhanced Password Strength -->
+            @if (password) {
+            <div class="strength-meter animate-fade-in">
+              <div class="strength-track">
+                <div
+                  class="strength-fill"
+                  [class.weak]="hasMinLength() && !hasGoodLength()"
+                  [class.medium]="hasGoodLength() && !hasUpperCase()"
+                  [class.strong]="hasUpperCase() && hasNumber()"
+                ></div>
+              </div>
+              <div class="strength-indicators">
+                <div class="indicator" [class.met]="hasMinLength()">
+                  <ion-icon name="checkmark"></ion-icon>
+                  <span>6+ chars</span>
+                </div>
+                <div class="indicator" [class.met]="hasUpperCase()">
+                  <ion-icon name="checkmark"></ion-icon>
+                  <span>Uppercase</span>
+                </div>
+                <div class="indicator" [class.met]="hasNumber()">
+                  <ion-icon name="checkmark"></ion-icon>
+                  <span>Number</span>
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+
+          <!-- Confirm Password Field -->
+          <div
+            class="field-group animate-field"
+            [style.animation-delay]="'0.4s'"
+          >
+            <div
+              class="input-container"
+              [class.focused]="confirmPassword"
+              [class.error]="confirmPassword && !passwordsMatch()"
+            >
+              <div class="input-wrapper">
+                <ion-icon name="shield-checkmark" class="field-icon"></ion-icon>
+                <ion-input
+                  [(ngModel)]="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  required
+                  placeholder="Confirm Password"
+                  class="neo-input"
+                ></ion-input>
+                <div class="input-highlight"></div>
+              </div>
+              <div class="field-line"></div>
+            </div>
+
+            @if (confirmPassword && !passwordsMatch()) {
+            <div class="error-hint animate-shake">
+              <ion-icon name="alert-circle"></ion-icon>
+              <span>Passwords don't match</span>
+            </div>
+            }
+          </div>
+
+          <!-- Register Button -->
+          <div
+            class="button-group animate-field"
+            [style.animation-delay]="'0.5s'"
+          >
+            <ion-button
+              expand="block"
+              type="submit"
+              class="neo-button primary-btn"
+              [disabled]="!registerForm.form.valid || isLoading || (confirmPassword && !passwordsMatch())"
+            >
+              <div class="btn-content">
+                @if (isLoading) {
+                <ion-spinner name="crescent" class="btn-spinner"></ion-spinner>
+                <span>Creating Account...</span>
+                } @else {
+                <ion-icon name="rocket" class="btn-icon"></ion-icon>
+                <span>Create Account</span>
+                <div class="btn-arrow">
+                  <ion-icon name="chevron-forward"></ion-icon>
+                </div>
+                }
+              </div>
+              <div class="btn-glow"></div>
+            </ion-button>
+          </div>
+
+          <!-- Error Message -->
+          @if (error) {
+          <div class="error-card animate-bounce-in">
+            <div class="error-content">
+              <ion-icon name="warning" class="error-icon"></ion-icon>
+              <span>{{ error }}</span>
+            </div>
+          </div>
+          }
+        </form>
+
+        <!-- Login Link -->
+        <div
+          class="footer-section animate-field"
+          [style.animation-delay]="'0.7s'"
+        >
+          <p class="login-prompt">Already have an account?</p>
+          <ion-button fill="clear" class="login-link-btn" (click)="goToLogin()">
+            <span>Sign In</span>
+            <ion-icon name="arrow-forward" slot="end"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

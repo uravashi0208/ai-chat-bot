@@ -33,7 +33,6 @@ export const isTokenExpired = (token) => {
     
     return isExpired;
   } catch (error) {
-    console.error('❌ Error parsing token:', error);
     return true; // If token is malformed, consider it expired
   }
 };
@@ -145,8 +144,6 @@ export const clearAuthData = () => {
   localStorage.removeItem('token');
   localStorage.removeItem('rememberToken');
   localStorage.removeItem('refreshToken');
-  
-  console.log('🧹 Authentication data cleared');
 };
 
 /**
