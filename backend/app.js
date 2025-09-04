@@ -37,7 +37,11 @@ app.use(cors({
     "http://localhost:8100", // Ionic dev server port
     "http://localhost:4200",
     process.env.CLIENT_URL,
-    process.env.CLIENT_URL_2
+    process.env.CLIENT_URL_2,
+    process.env.FRONTEND_URL, // Production frontend URL
+    process.env.MOBILE_URL,   // Production mobile app URL
+    /^https:\/\/.*\.vercel\.app$/, // Allow all Vercel deployments
+    /^https:\/\/.*\.netlify\.app$/, // Allow all Netlify deployments
   ].filter(Boolean), // Remove undefined values
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
