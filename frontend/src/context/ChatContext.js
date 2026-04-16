@@ -1,0 +1,192 @@
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+} from "react";
+import { getSocket } from "../services/socket";
+import { conversationsApi } from "../services/api";
+import { useAuth } from "./AuthContext";
+
+const ChatContext = createContext(null);
+
+export const ChatProvider = ({ children }) => {
+  const { user } = useAuth();
+  const [conversations, setConversations] = useState([]);
+  const [activeConversation, setActiveConversation] = useState(null);
+  const [onlineUsers, setOnlineUsers] = useState(new Set());
+  const [typingUsers, setTypingUsers] = useState({});
+  const [loading, setLoading] = useState(false);
+  const socketRef = useRef(null);
+
+  // Load conversations
+  const loadConversations = useCallback(async () => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      const data = await conversationsApi.getAll();
+      setConversations(data);
+
+      // FIX #4: Pre-populate onlineUsers from the status field in loaded conversations.
+      // The participants array includes each user's current `status` column from DB.
+      // This means we show correct online state immediately on page load,
+      // before any socket user:status events arrive.
+      const initialOnline = new Set();
+      data.forEach((conv) => {
+        (conv.participants || []).forEach((p) => {
+          if (p.user?.id !== user.id && p.user?.status === "online") {
+            initialOnline.add(p.user.id);
+          }
+        });
+      });
+      setOnlineUsers(initialOnline);
+    } catch (err) {
+      console.error("Failed to load conversations", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) loadConversations();
+  }, [user, loadConversations]);
+
+  // Socket event listeners
+  useEffect(() => {
+    if (!user) return;
+    const socket = getSocket();
+    if (!socket) return;
+    socketRef.current = socket;
+
+    const onNewMessage = ({ conversationId, message }) => {
+      setConversations((prev) =>
+        prev
+          .map((c) =>
+            c.id === conversationId
+              ? {
+                  ...c,
+                  last_message: message,
+                  last_message_at: message.created_at,
+                }
+              : c,
+          )
+          .sort(
+            (a, b) =>
+              new Date(b.last_message_at || b.created_at) -
+              new Date(a.last_message_at || a.created_at),
+          ),
+      );
+    };
+
+    // FIX #3: When the other user starts a conversation with us,
+    // the backend now emits conversation:new — add it to the list here
+    const onNewConversation = (conv) => {
+      setConversations((prev) => {
+        // Avoid duplicates in case both users trigger this simultaneously
+        const exists = prev.find((c) => c.id === conv.id);
+        return exists ? prev : [conv, ...prev];
+      });
+    };
+
+    // FIX #4: user:status events from socket keep onlineUsers in sync in real-time
+    const onUserStatus = ({ userId, status }) => {
+      setOnlineUsers((prev) => {
+        const next = new Set(prev);
+        if (status === "online") next.add(userId);
+        else next.delete(userId);
+        return next;
+      });
+
+      // Also update status inside conversations participants so the green dot stays correct
+      setConversations((prev) =>
+        prev.map((conv) => ({
+          ...conv,
+          participants: (conv.participants || []).map((p) =>
+            p.user?.id === userId ? { ...p, user: { ...p.user, status } } : p,
+          ),
+        })),
+      );
+    };
+
+    const onTypingStart = ({ conversationId, userId }) => {
+      setTypingUsers((prev) => ({
+        ...prev,
+        [conversationId]: new Set([...(prev[conversationId] || []), userId]),
+      }));
+    };
+
+    const onTypingStop = ({ conversationId, userId }) => {
+      setTypingUsers((prev) => {
+        const set = new Set(prev[conversationId] || []);
+        set.delete(userId);
+        return { ...prev, [conversationId]: set };
+      });
+    };
+
+    socket.on("message:new", onNewMessage);
+    socket.on("conversation:new", onNewConversation);
+    socket.on("user:status", onUserStatus);
+    socket.on("typing:start", onTypingStart);
+    socket.on("typing:stop", onTypingStop);
+
+    return () => {
+      socket.off("message:new", onNewMessage);
+      socket.off("conversation:new", onNewConversation);
+      socket.off("user:status", onUserStatus);
+      socket.off("typing:start", onTypingStart);
+      socket.off("typing:stop", onTypingStop);
+    };
+  }, [user]);
+
+  const openConversation = useCallback(async (targetUserId) => {
+    try {
+      const conv = await conversationsApi.findOrCreateDirect(targetUserId);
+      setActiveConversation(conv);
+      setConversations((prev) => {
+        const exists = prev.find((c) => c.id === conv.id);
+        return exists ? prev : [conv, ...prev];
+      });
+      return conv;
+    } catch (err) {
+      console.error("Failed to open conversation", err);
+    }
+  }, []);
+
+  const getTypingUsersForConversation = useCallback(
+    (conversationId) => typingUsers[conversationId] || new Set(),
+    [typingUsers],
+  );
+
+  // FIX #4: isUserOnline now correctly reflects both socket events AND pre-loaded status
+  const isUserOnline = useCallback(
+    (userId) => onlineUsers.has(userId),
+    [onlineUsers],
+  );
+
+  return (
+    <ChatContext.Provider
+      value={{
+        conversations,
+        setConversations,
+        activeConversation,
+        setActiveConversation,
+        loading,
+        loadConversations,
+        openConversation,
+        isUserOnline,
+        getTypingUsersForConversation,
+        onlineUsers,
+      }}
+    >
+      {children}
+    </ChatContext.Provider>
+  );
+};
+
+export const useChat = () => {
+  const ctx = useContext(ChatContext);
+  if (!ctx) throw new Error("useChat must be used within ChatProvider");
+  return ctx;
+};

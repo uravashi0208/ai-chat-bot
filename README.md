@@ -1,672 +1,232 @@
-# 💬 Real-Time Chat Application
+# 💬 WhatsApp Clone
 
-A modern, full-stack real-time chat application built with Node.js, React, and Ionic. Features secure user authentication, real-time messaging with Socket.IO, and cross-platform mobile support.
+A full-stack real-time chat application built with **React 16**, **NestJS**, and **Supabase** — featuring the full WhatsApp Web UI/UX.
 
-![Chat App](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)
-![Node.js](https://img.shields.io/badge/Node.js-18.x-green)
-![React](https://img.shields.io/badge/React-18.x-blue)
-![Ionic](https://img.shields.io/badge/Ionic-8.x-lightblue)
-![Socket.IO](https://img.shields.io/badge/Socket.IO-4.8.x-black)
+---
 
-## 🏗️ Architecture Overview
+## ✨ Features
 
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│                 │    │                 │    │                 │
-│  Ionic Mobile   │◄──►│   Backend API   │◄──►│ React Frontend  │
-│     App         │    │   (Node.js)     │    │   (Web App)     │
-│                 │    │                 │    │                 │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-                              │
-                              ▼
-                       ┌─────────────────┐
-                       │                 │
-                       │   Supabase      │
-                       │   PostgreSQL    │
-                       │                 │
-                       └─────────────────┘
-```
+| Feature | Details |
+|---|---|
+| 🔐 **Auth** | Register / Login with JWT, bcrypt password hashing |
+| 💬 **Real-time messaging** | WebSocket (Socket.IO) — instant delivery |
+| 👀 **Online presence** | Live online/offline/away status |
+| ✍️ **Typing indicators** | Animated typing bubbles per conversation |
+| ✅ **Message status** | Sending → Sent → Delivered → Read (blue ticks) |
+| 💬 **Message reactions** | 6 emoji quick reactions per message |
+| ↩️ **Reply to messages** | Threaded reply previews in bubbles |
+| ✏️ **Edit / Delete** | Edit your messages, delete for everyone |
+| 👥 **Group chats** | Multi-participant group conversations |
+| 🔍 **User search** | Search users by name or username |
+| 📱 **Mobile responsive** | Slide-in chat panel on small screens |
+| 🎨 **WhatsApp Dark UI** | Pixel-accurate dark theme |
 
-## 🚀 Features
+---
 
-### Core Features
-
-- 🔐 **Secure Authentication** - JWT-based auth with bcrypt password hashing
-- 💬 **Real-time Messaging** - Instant messaging with Socket.IO
-- 👥 **User Management** - User registration, login, profile management
-- 🌐 **Cross-platform** - Web app (React) and mobile app (Ionic)
-- 📱 **Responsive Design** - Modern, dark theme UI with animations
-- ⚡ **Fast & Scalable** - Optimized for performance and scalability
-
-### Technical Features
-
-- 🔄 **Real-time Updates** - Live user status, message delivery
-- 🛡️ **Security** - Rate limiting, input validation, secure headers
-- 📝 **Logging** - Comprehensive logging with Winston
-- 🎯 **Error Handling** - Robust error handling and validation
-- 🔒 **Environment Configuration** - Secure environment management
-
-## 📋 Prerequisites
-
-Before running this application, ensure you have:
-
-- **Node.js** (v18.0.0 or higher)
-- **npm** or **yarn** package manager
-- **Supabase Account** (for database)
-- **Git** for version control
-
-## 🛠️ Technology Stack
-
-### Backend
-
-- **Runtime**: Node.js with Express.js
-- **Database**: Supabase (PostgreSQL)
-- **Authentication**: JWT with bcrypt
-- **Real-time**: Socket.IO
-- **Logging**: Winston
-- **Security**: Helmet, CORS, Rate Limiting
-- **Validation**: Joi
-
-### Frontend (Web)
-
-- **Framework**: React 18 with Vite
-- **Language**: JavaScript/JSX
-- **Styling**: CSS3 with CSS Variables
-- **HTTP Client**: Axios
-- **Real-time**: Socket.IO Client
-- **Routing**: React Router DOM
-
-### Mobile App
-
-- **Framework**: Ionic 8 with Angular
-- **Language**: TypeScript
-- **Styling**: SCSS with Ionic Components
-- **HTTP Client**: Angular HttpClient
-- **Real-time**: Socket.IO Client
-
-## 📦 Project Structure
+## 🏗️ Tech Stack
 
 ```
-chat-app/
-├── backend/                    # Node.js API Server
-│   ├── config/                # Database and JWT configuration
-│   ├── controllers/           # Route controllers
-│   ├── middleware/            # Custom middleware
-│   ├── models/                # Database models
-│   ├── routes/                # API routes
-│   ├── services/              # Business logic services
-│   ├── utils/                 # Utility functions
-│   ├── logs/                  # Application logs
-│   ├── server.js              # Entry point
-│   └── package.json           # Dependencies
-│
-├── frontend/                   # React Web Application
-│   ├── public/                # Static assets
-│   ├── src/
-│   │   ├── api/               # API client
-│   │   ├── components/        # React components
-│   │   ├── context/           # React context
-│   │   ├── hooks/             # Custom hooks
-│   │   ├── layouts/           # Page layouts
-│   │   ├── routes/            # Route configuration
-│   │   ├── theme/             # Theme and styles
-│   │   ├── utils/             # Utility functions
-│   │   ├── views/             # Page components
-│   │   └── main.jsx           # Entry point
-│   └── package.json           # Dependencies
-│
-├── ionicapp/                   # Ionic Mobile Application
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── auth/          # Authentication pages
-│   │   │   ├── dashboard/     # Main dashboard
-│   │   │   ├── services/      # Angular services
-│   │   │   └── app.module.ts  # App module
-│   │   ├── assets/            # Static assets
-│   │   ├── environments/      # Environment configs
-│   │   └── theme/             # Global styles
-│   ├── capacitor.config.ts    # Capacitor configuration
-│   └── package.json           # Dependencies
-│
-└── README.md                   # This file
+Frontend          Backend            Database
+─────────         ─────────          ─────────
+React 16          NestJS (latest)    Supabase (PostgreSQL)
+React Router 5    Socket.IO          Supabase Realtime
+Socket.IO Client  JWT Auth           Row Level Security
+Axios             Passport.js
+date-fns          bcryptjs
 ```
+
+---
 
 ## 🚀 Quick Start
 
-### 1. Clone the Repository
+### 1. Set up Supabase
 
-```bash
-git clone <repository-url>
-cd chat-app
+1. Create a project at [supabase.com](https://supabase.com)
+2. Go to **SQL Editor** and run the entire `supabase-schema.sql` file
+3. In Supabase Dashboard → **Database → Replication**, enable realtime on:
+   - `messages`
+   - `conversations`
+   - `users`
+   - `conversation_participants`
+4. Copy your **Project URL** and **service_role key** (Settings → API)
+
+Also add this SQL function for finding direct conversations:
+```sql
+CREATE OR REPLACE FUNCTION find_direct_conversation(user1_id UUID, user2_id UUID)
+RETURNS TABLE(conversation_id UUID) AS $$
+  SELECT cp1.conversation_id
+  FROM conversation_participants cp1
+  JOIN conversation_participants cp2
+    ON cp1.conversation_id = cp2.conversation_id
+  JOIN conversations c
+    ON c.id = cp1.conversation_id
+  WHERE cp1.user_id = user1_id
+    AND cp2.user_id = user2_id
+    AND c.type = 'direct'
+  LIMIT 1;
+$$ LANGUAGE sql;
 ```
 
 ### 2. Backend Setup
 
 ```bash
-# Navigate to backend directory
 cd backend
-
-# Install dependencies
-npm install
-
-# Create environment file
 cp .env.example .env
+# Fill in your SUPABASE_URL, SUPABASE_SERVICE_KEY, JWT_SECRET
 
-# Configure your environment variables
-nano .env
+npm install
+npm run start:dev
+# Runs on http://localhost:4000
 ```
 
-**Environment Variables (.env):**
-
-```env
-# Database Configuration
-SUPABASE_URL=your_supabase_project_url
-SUPABASE_ANON_KEY=your_supabase_anon_key
-
-# JWT Configuration
-JWT_SECRET=your_super_secure_jwt_secret_key
-JWT_REFRESH_SECRET=your_refresh_secret_key
-
-# Server Configuration
-PORT=5000
-CLIENT_URL=http://localhost:3000
-CLIENT_URL_2=http://localhost:5173
-NODE_ENV=development
-```
+### 3. Frontend Setup
 
 ```bash
-# Start the backend server
+cd frontend
+cp .env.example .env
+# Fill in your REACT_APP_SUPABASE_URL and REACT_APP_SUPABASE_ANON_KEY
+
+npm install
 npm start
-
-# For development with auto-reload
-npm run dev
+# Runs on http://localhost:3000
 ```
 
-### 3. Frontend Setup (React Web App)
+### 4. Docker (Optional)
 
 ```bash
-# Navigate to frontend directory
-cd ../frontend
-
-# Install dependencies
-npm install
-
-# Start the development server
-npm run dev
+cp .env.example .env  # Fill in all vars
+docker-compose up
 ```
-
-The web application will be available at `http://localhost:5173`
-
-### 4. Mobile App Setup (Ionic)
-
-```bash
-# Navigate to ionic app directory
-cd ../ionicapp
-
-# Install dependencies
-npm install
-
-# Start the development server
-ionic serve
-```
-
-The mobile app will be available at `http://localhost:8100`
-
-## 🔧 Development Workflow
-
-### Backend Development
-
-```bash
-# Start with auto-reload
-npm run dev
-
-# Run tests (when available)
-npm test
-
-# Check logs
-tail -f logs/combined.log
-```
-
-### Frontend Development
-
-```bash
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
-```
-
-### Mobile App Development
-
-```bash
-# Serve in browser
-ionic serve
-
-# Build for production
-ionic build
-
-# Add platform (iOS/Android)
-ionic capacitor add ios
-ionic capacitor add android
-
-# Run on device
-ionic capacitor run ios
-ionic capacitor run android
-```
-
-## 📚 API Documentation
-
-### Authentication Endpoints
-
-#### Register User
-
-```http
-POST /api/auth/register
-Content-Type: application/json
-
-{
-  "username": "johndoe",
-  "email": "john@example.com",
-  "password": "securePassword123"
-}
-```
-
-#### Login User
-
-```http
-POST /api/auth/login
-Content-Type: application/json
-
-{
-  "email": "john@example.com",
-  "password": "securePassword123"
-}
-```
-
-#### Refresh Token
-
-```http
-POST /api/auth/refresh-token
-Cookie: refreshToken=<refresh_token>
-```
-
-#### Logout
-
-```http
-POST /api/auth/logout
-Authorization: Bearer <access_token>
-```
-
-### User Endpoints
-
-#### Get User Profile
-
-```http
-GET /api/users/profile
-Authorization: Bearer <access_token>
-```
-
-#### Get All Users
-
-```http
-GET /api/users
-Authorization: Bearer <access_token>
-```
-
-### Chat Endpoints
-
-#### Get Messages
-
-```http
-GET /api/chat/messages?page=1&limit=50
-Authorization: Bearer <access_token>
-```
-
-#### Send Message
-
-```http
-POST /api/chat/messages
-Authorization: Bearer <access_token>
-Content-Type: application/json
-
-{
-  "content": "Hello, World!",
-  "type": "text"
-}
-```
-
-## 🔌 WebSocket Events
-
-### Client to Server Events
-
-```javascript
-// Join chat room
-socket.emit("join", { token: "jwt_token" });
-
-// Send message
-socket.emit("send_message", {
-  content: "Hello everyone!",
-  type: "text",
-});
-
-// User typing
-socket.emit("typing", { isTyping: true });
-```
-
-### Server to Client Events
-
-```javascript
-// New message received
-socket.on("new_message", (message) => {
-  // Handle new message
-});
-
-// User joined
-socket.on("user_joined", (user) => {
-  // Handle user join
-});
-
-// User left
-socket.on("user_left", (user) => {
-  // Handle user leave
-});
-
-// User typing
-socket.on("user_typing", (data) => {
-  // Handle typing indicator
-});
-```
-
-## 🛡️ Security Features
-
-### Authentication & Authorization
-
-- **JWT Tokens**: Secure authentication with access and refresh tokens
-- **Password Hashing**: bcrypt with salt rounds for secure password storage
-- **Token Expiration**: Automatic token refresh mechanism
-
-### API Security
-
-- **Rate Limiting**: Prevents API abuse and DDoS attacks
-- **CORS Configuration**: Controlled cross-origin resource sharing
-- **Helmet**: Security headers for Express.js
-- **Input Validation**: Joi schema validation for all inputs
-
-### Data Protection
-
-- **Environment Variables**: Sensitive data stored in environment files
-- **SQL Injection Protection**: Parameterized queries with Supabase
-- **XSS Protection**: Input sanitization and validation
-
-## 🚀 Deployment
-
-### Backend Deployment (Heroku Example)
-
-```bash
-# Install Heroku CLI
-# Login to Heroku
-heroku login
-
-# Create new app
-heroku create your-chat-app-backend
-
-# Set environment variables
-heroku config:set SUPABASE_URL=your_url
-heroku config:set SUPABASE_ANON_KEY=your_key
-heroku config:set JWT_SECRET=your_secret
-
-# Deploy
-git subtree push --prefix backend heroku main
-```
-
-### Frontend Deployment (Netlify Example)
-
-```bash
-# Build the project
-npm run build
-
-# Deploy to Netlify (using Netlify CLI)
-npx netlify deploy --prod --dir=dist
-```
-
-### Mobile App Deployment
-
-#### iOS Deployment
-
-```bash
-# Build the project
-ionic build
-
-# Add iOS platform
-ionic capacitor add ios
-
-# Open in Xcode
-ionic capacitor open ios
-
-# Build and deploy through Xcode
-```
-
-#### Android Deployment
-
-```bash
-# Build the project
-ionic build
-
-# Add Android platform
-ionic capacitor add android
-
-# Open in Android Studio
-ionic capacitor open android
-
-# Build and deploy through Android Studio
-```
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-#### Backend Issues
-
-**Port Already in Use**
-
-```bash
-# Kill process on port 5000
-npx kill-port 5000
-
-# Or use different port
-PORT=5001 npm start
-```
-
-**Database Connection Error**
-
-```bash
-# Check Supabase credentials
-# Verify network connectivity
-# Check environment variables
-```
-
-**JWT Token Issues**
-
-```bash
-# Verify JWT_SECRET is set
-# Check token expiration
-# Validate token format
-```
-
-#### Frontend Issues
-
-**CORS Errors**
-
-```bash
-# Check backend CORS configuration
-# Verify CLIENT_URL in backend .env
-# Use proxy in vite.config.js if needed
-```
-
-**Socket Connection Failed**
-
-```bash
-# Verify backend Socket.IO server is running
-# Check socketUrl in environment
-# Ensure no firewall blocking WebSocket connections
-```
-
-#### Mobile App Issues
-
-**Build Failures**
-
-```bash
-# Clear node_modules and reinstall
-rm -rf node_modules package-lock.json
-npm install
-
-# Clear Ionic cache
-ionic cache clear
-```
-
-**Platform Issues**
-
-```bash
-# Ensure latest Capacitor CLI
-npm install -g @capacitor/cli@latest
-
-# Sync platform files
-ionic capacitor sync
-```
-
-## 📈 Performance Optimization
-
-### Backend Optimizations
-
-- **Connection Pooling**: Efficient database connections
-- **Rate Limiting**: API protection and performance
-- **Logging**: Structured logging for monitoring
-- **Memory Management**: Efficient memory usage patterns
-
-### Frontend Optimizations
-
-- **Lazy Loading**: Code splitting for faster initial loads
-- **Asset Optimization**: Compressed images and minified CSS/JS
-- **Caching**: Strategic caching of API responses
-- **Bundle Analysis**: Regular bundle size monitoring
-
-### Mobile App Optimizations
-
-- **Ahead-of-Time Compilation**: AOT for better performance
-- **Lazy Loading**: Feature modules loaded on demand
-- **Native Performance**: Capacitor plugins for native features
-- **Memory Management**: Proper component lifecycle management
-
-## 🧪 Testing
-
-### Backend Testing
-
-```bash
-# Run unit tests
-npm test
-
-# Run integration tests
-npm run test:integration
-
-# Test coverage
-npm run test:coverage
-```
-
-### Frontend Testing
-
-```bash
-# Run unit tests
-npm run test
-
-# Run e2e tests
-npm run test:e2e
-
-# Component testing
-npm run test:components
-```
-
-### Mobile App Testing
-
-```bash
-# Unit tests
-npm run test
-
-# E2E tests
-npm run e2e
-
-# Device testing
-ionic capacitor run ios --livereload
-ionic capacitor run android --livereload
-```
-
-## 🤝 Contributing
-
-We welcome contributions! Please follow these guidelines:
-
-### Development Process
-
-1. **Fork** the repository
-2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
-3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
-4. **Push** to the branch (`git push origin feature/amazing-feature`)
-5. **Open** a Pull Request
-
-### Code Standards
-
-- **ESLint**: Follow the established linting rules
-- **Prettier**: Use consistent code formatting
-- **TypeScript**: Use TypeScript for new features when applicable
-- **Testing**: Include tests for new features
-- **Documentation**: Update documentation for API changes
-
-### Commit Convention
-
-```
-type(scope): description
-
-feat(auth): add password reset functionality
-fix(chat): resolve message ordering issue
-docs(readme): update installation instructions
-```
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👥 Team
-
-- **Backend Developer**: Node.js, Express, Socket.IO, Database
-- **Frontend Developer**: React, UI/UX, State Management
-- **Mobile Developer**: Ionic, Angular, Capacitor, Native Integration
-- **DevOps**: Deployment, CI/CD, Performance Monitoring
-
-## 📞 Support
-
-### Getting Help
-
-- 📧 **Email**: support@chatapp.com
-- 💬 **Discord**: [Join our community](https://discord.gg/chatapp)
-- 🐛 **Issues**: [GitHub Issues](https://github.com/your-repo/issues)
-- 📖 **Documentation**: [Full Documentation](https://docs.chatapp.com)
-
-### FAQ
-
-**Q: How do I reset my development environment?**
-A: Delete `node_modules`, `.env` files, and reinstall dependencies.
-
-**Q: Can I use a different database?**
-A: Yes, modify the database configuration in `backend/config/db.js`.
-
-**Q: How do I add new features?**
-A: Follow the contributing guidelines and create a feature branch.
-
-**Q: Is this production ready?**
-A: Yes, but ensure proper environment configuration and security review.
 
 ---
 
-_For more information, visit our [website](https://chatapp.com) or check out our [documentation](https://docs.chatapp.com)._
+## 📁 Project Structure
+
+```
+whatsapp-clone/
+├── supabase-schema.sql          # Run this in Supabase SQL editor first
+├── docker-compose.yml
+│
+├── backend/                     # NestJS API
+│   └── src/
+│       ├── main.ts
+│       ├── app.module.ts
+│       ├── supabase/            # Supabase client service
+│       ├── auth/                # JWT auth, register, login
+│       ├── users/               # User search, profile, contacts
+│       ├── conversations/       # Direct & group conversations
+│       ├── messages/            # CRUD, reactions, status
+│       └── chat/                # WebSocket gateway (Socket.IO)
+│
+└── frontend/                    # React 16 app
+    └── src/
+        ├── App.js
+        ├── context/
+        │   ├── AuthContext.js   # Auth state + JWT
+        │   └── ChatContext.js   # Conversations + socket events
+        ├── services/
+        │   ├── api.js           # Axios API calls
+        │   └── socket.js        # Socket.IO helpers
+        ├── utils/helpers.js     # Date formatting, conversation utils
+        ├── pages/
+        │   ├── LoginPage.js
+        │   ├── RegisterPage.js
+        │   └── ChatPage.js      # Main layout
+        └── components/
+            ├── common/Avatar.js
+            ├── WelcomeScreen.js
+            ├── Sidebar/
+            │   ├── Sidebar.js
+            │   ├── ConversationList.js
+            │   ├── ContactSearch.js
+            │   └── UserProfile.js
+            └── ChatWindow/
+                ├── ChatWindow.js    # Messages controller
+                ├── ChatHeader.js    # Status, typing, menu
+                ├── MessageList.js   # Virtualized scroll
+                ├── MessageBubble.js # Individual messages
+                └── MessageInput.js  # Textarea + emoji + typing
+```
+
+---
+
+## 🔌 WebSocket Events
+
+| Event (Client → Server) | Payload |
+|---|---|
+| `message:send` | `{ conversationId, content, type, replyToId }` |
+| `message:edit` | `{ messageId, conversationId, content }` |
+| `message:delete` | `{ messageId, conversationId }` |
+| `message:reaction` | `{ messageId, conversationId, emoji, action }` |
+| `typing:start` | `{ conversationId }` |
+| `typing:stop` | `{ conversationId }` |
+| `conversation:join` | `{ conversationId }` |
+| `conversation:read` | `{ conversationId }` |
+
+| Event (Server → Client) | Payload |
+|---|---|
+| `message:new` | `{ conversationId, message }` |
+| `message:edited` | `{ conversationId, message }` |
+| `message:deleted` | `{ conversationId, messageId }` |
+| `message:reaction` | `{ conversationId, messageId, userId, emoji, action }` |
+| `typing:start` | `{ conversationId, userId }` |
+| `typing:stop` | `{ conversationId, userId }` |
+| `user:status` | `{ userId, status }` |
+| `conversation:new` | `conversation` |
+| `conversation:read` | `{ conversationId, userId }` |
+
+---
+
+## 🔒 Environment Variables
+
+**Backend `.env`**
+```env
+SUPABASE_URL=https://xxxx.supabase.co
+SUPABASE_SERVICE_KEY=eyJhbGci...
+JWT_SECRET=your-secret-key-min-32-chars
+PORT=4000
+FRONTEND_URL=http://localhost:3000
+```
+
+**Frontend `.env`**
+```env
+REACT_APP_API_URL=http://localhost:4000/api
+REACT_APP_WS_URL=http://localhost:4000
+REACT_APP_SUPABASE_URL=https://xxxx.supabase.co
+REACT_APP_SUPABASE_ANON_KEY=eyJhbGci...
+```
+
+---
+
+## 🛣️ REST API Endpoints
+
+```
+POST   /api/auth/register
+POST   /api/auth/login
+POST   /api/auth/logout
+GET    /api/auth/me
+
+GET    /api/users/search?q=name
+GET    /api/users/contacts
+POST   /api/users/contacts/:contactId
+PUT    /api/users/profile
+
+GET    /api/conversations
+POST   /api/conversations/direct/:targetUserId
+POST   /api/conversations/group
+GET    /api/conversations/:id
+PUT    /api/conversations/:id/read
+
+GET    /api/conversations/:id/messages
+POST   /api/conversations/:id/messages
+PUT    /api/conversations/:id/messages/:msgId
+DELETE /api/conversations/:id/messages/:msgId
+POST   /api/conversations/:id/messages/:msgId/reactions
+DELETE /api/conversations/:id/messages/:msgId/reactions/:emoji
+```
+
+---
+
+## 📄 License
+
+MIT — free to use, modify, and distribute.
