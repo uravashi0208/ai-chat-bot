@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "nodemon src/index.js",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "start:prod": "nodemon src/index.js"
   },
   "dependencies": {
     "@apollo/server": "^4.10.0",
