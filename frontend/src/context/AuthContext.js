@@ -20,6 +20,15 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
+  // WhatsApp-style phone OTP login (user + token already resolved by caller)
+  const loginWithPhone = useCallback((user, token) => {
+    localStorage.setItem('wa_token', token);
+    localStorage.setItem('wa_user', JSON.stringify(user));
+    setUser(user);
+    initSocket(token);
+    return user;
+  }, []);
+
   const login = useCallback(async (identifier, password) => {
     const { user, token } = await authApi.login({ identifier, password });
     localStorage.setItem('wa_token', token);
@@ -53,7 +62,7 @@ export const AuthProvider = ({ children }) => {
   }, [user]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, loading, login, loginWithPhone, register, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

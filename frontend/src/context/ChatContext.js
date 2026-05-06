@@ -20,6 +20,23 @@ export const ChatProvider = ({ children }) => {
   const [typingUsers, setTypingUsers] = useState({});
   const [loading, setLoading] = useState(false);
   const socketRef = useRef(null);
+  // Track active conversation in a ref so socket callbacks can access latest value
+  const activeConversationRef = useRef(null);
+
+  // Sync ref with state
+  useEffect(() => {
+    activeConversationRef.current = activeConversation;
+  }, [activeConversation]);
+
+  // Clear unread count when a conversation is set as active
+  const setActiveConversationAndClear = useCallback((conv) => {
+    setActiveConversation(conv);
+    if (conv) {
+      setConversations((prev) =>
+        prev.map((c) => (c.id === conv.id ? { ...c, unread_count: 0 } : c)),
+      );
+    }
+  }, []);
 
   // Load conversations
   const loadConversations = useCallback(async () => {
@@ -27,14 +44,16 @@ export const ChatProvider = ({ children }) => {
     setLoading(true);
     try {
       const data = await conversationsApi.getAll();
-      setConversations(data);
+      // Deduplicate by id (safety net)
+      const unique = Array.from(new Map(data.map((c) => [c.id, c])).values());
+      setConversations(unique);
 
       // FIX #4: Pre-populate onlineUsers from the status field in loaded conversations.
       // The participants array includes each user's current `status` column from DB.
       // This means we show correct online state immediately on page load,
       // before any socket user:status events arrive.
       const initialOnline = new Set();
-      data.forEach((conv) => {
+      unique.forEach((conv) => {
         (conv.participants || []).forEach((p) => {
           if (p.user?.id !== user.id && p.user?.status === "online") {
             initialOnline.add(p.user.id);
@@ -69,6 +88,12 @@ export const ChatProvider = ({ children }) => {
                   ...c,
                   last_message: message,
                   last_message_at: message.created_at,
+                  // If this message is NOT from me and this is NOT the active conversation, increment unread
+                  unread_count:
+                    message.sender_id !== user?.id &&
+                    activeConversationRef.current?.id !== conversationId
+                      ? (c.unread_count || 0) + 1
+                      : c.unread_count || 0,
                 }
               : c,
           )
@@ -84,9 +109,15 @@ export const ChatProvider = ({ children }) => {
     // the backend now emits conversation:new — add it to the list here
     const onNewConversation = (conv) => {
       setConversations((prev) => {
-        // Avoid duplicates in case both users trigger this simultaneously
+        // Avoid duplicates
         const exists = prev.find((c) => c.id === conv.id);
-        return exists ? prev : [conv, ...prev];
+        if (exists) return prev;
+        const updated = [conv, ...prev];
+        return updated.sort(
+          (a, b) =>
+            new Date(b.last_message_at || b.created_at) -
+            new Date(a.last_message_at || a.created_at),
+        );
       });
     };
 
@@ -140,19 +171,28 @@ export const ChatProvider = ({ children }) => {
     };
   }, [user]);
 
-  const openConversation = useCallback(async (targetUserId) => {
-    try {
-      const conv = await conversationsApi.findOrCreateDirect(targetUserId);
-      setActiveConversation(conv);
-      setConversations((prev) => {
-        const exists = prev.find((c) => c.id === conv.id);
-        return exists ? prev : [conv, ...prev];
-      });
-      return conv;
-    } catch (err) {
-      console.error("Failed to open conversation", err);
-    }
-  }, []);
+  const openConversation = useCallback(
+    async (targetUserId) => {
+      try {
+        const conv = await conversationsApi.findOrCreateDirect(targetUserId);
+        setActiveConversationAndClear(conv);
+        setConversations((prev) => {
+          const exists = prev.find((c) => c.id === conv.id);
+          if (exists) return prev;
+          const updated = [conv, ...prev];
+          return updated.sort(
+            (a, b) =>
+              new Date(b.last_message_at || b.created_at) -
+              new Date(a.last_message_at || a.created_at),
+          );
+        });
+        return conv;
+      } catch (err) {
+        console.error("Failed to open conversation", err);
+      }
+    },
+    [setActiveConversationAndClear],
+  );
 
   const getTypingUsersForConversation = useCallback(
     (conversationId) => typingUsers[conversationId] || new Set(),
@@ -171,7 +211,7 @@ export const ChatProvider = ({ children }) => {
         conversations,
         setConversations,
         activeConversation,
-        setActiveConversation,
+        setActiveConversation: setActiveConversationAndClear,
         loading,
         loadConversations,
         openConversation,

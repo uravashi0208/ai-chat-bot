@@ -1,1 +1,72 @@
+# ──────────────────────────────────────────────────────────────────
+#  .gitignore  —  Common for BE (NestJS) + FE (Create React App)
+#  Place this file in the ROOT of your project (parent of be/ & fe/)
+# ──────────────────────────────────────────────────────────────────
+
+
+# ── Dependencies ──────────────────────────────────────────────────
 **/node_modules/
+.pnpm-store/
+# ── Logs ──────────────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ── Environment & Secrets ─────────────────────────────────────────
+# NEVER commit real keys — commit only .env.example as reference
+.env
+.env.local
+.env.development
+.env.development.local
+.env.staging
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+!.env.example
+
+# ── BE: NestJS Build Output ───────────────────────────────────────
+be/dist/
+be/*.tsbuildinfo
+be/tsconfig.tsbuildinfo
+
+# ── FE: CRA Build Output ──────────────────────────────────────────
+# CRA builds to /build — Vercel outputDirectory is set to "build"
+fe/build/
+
+# ── Test & Coverage ───────────────────────────────────────────────
+coverage/
+.nyc_output/
+
+# ── Cache ─────────────────────────────────────────────────────────
+.eslintcache
+.cache/
+
+# ── Runtime / Uploads (server-generated) ─────────────────────────
+uploads/
+
+# ── Archives ──────────────────────────────────────────────────────
+*.tar
+*.tar.gz
+*.zip
+*.tgz
+
+# ── OS Artifacts ──────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Editor & IDE ──────────────────────────────────────────────────
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ── Docker ────────────────────────────────────────────────────────
+# Dockerfiles are committed; ignore local compose overrides only
+docker-compose.override.yml
