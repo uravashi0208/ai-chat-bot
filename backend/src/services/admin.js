@@ -152,7 +152,9 @@ export const adminService = {
   async login(identifier, password) {
     const { data: admin } = await supabase
       .from("admins")
-      .select("id, username, email, password_hash, created_at")
+      .select(
+        "id, username, full_name, email, phone, avatar_url, about, password_hash, created_at",
+      )
       .or(`email.eq.${identifier},username.eq.${identifier}`)
       .single();
 

@@ -47,7 +47,7 @@ async function gql(query, variables = {}) {
 
 // ─── Fragment helpers ────────────────────────────────────────────────────────
 
-const ADMIN_FIELDS = `id username email created_at`;
+const ADMIN_FIELDS = `id username full_name email phone avatar_url about created_at`;
 
 const USER_FIELDS = `
   id username full_name email phone avatar_url about status last_seen created_at
