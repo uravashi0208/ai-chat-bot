@@ -45,9 +45,9 @@ const LIGHT = {
   textMuted: "#9ca3af",
 };
 
-export function buildAdminTheme(mode = "dark") {
+export function buildAdminTheme(mode = "light") {
   const T = mode === "light" ? LIGHT : DARK;
-  const isDark = mode === "dark";
+  const isDark = mode === "light";
 
   return createTheme({
     palette: {

@@ -14,13 +14,16 @@ import { buildAdminTheme } from "../../theme/adminTheme";
 
 const STORAGE_KEY = "admin_theme_mode";
 
-const AdminThemeContext = createContext({ mode: "dark", toggleMode: () => {} });
+const AdminThemeContext = createContext({
+  mode: "light",
+  toggleMode: () => {},
+});
 
 export function AdminThemeProvider({ children }) {
   const [mode, setMode] = useState(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      return stored === "light" ? "light" : "dark";
+      return stored === "dark" ? "dark" : "light";
     } catch {
       return "dark";
     }
@@ -28,7 +31,7 @@ export function AdminThemeProvider({ children }) {
 
   const toggleMode = () =>
     setMode((prev) => {
-      const next = prev === "dark" ? "light" : "dark";
+      const next = prev === "light" ? "dark" : "light";
       try {
         localStorage.setItem(STORAGE_KEY, next);
       } catch {}
