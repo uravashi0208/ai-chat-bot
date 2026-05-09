@@ -1,24 +1,20 @@
 /**
- * admin/pages/WallpapersPage.js — pagination + FilterTabs (All/Active/Inactive)
+ * admin/pages/WallpapersPage.js
+ *
+ * Server-paginated wallpapers list with category filter and status tabs.
  */
 import React, { useState, useCallback } from "react";
 import {
   Box,
   Stack,
-  Button,
   TextField,
   MenuItem,
   Select,
   InputLabel,
   FormControl,
   Typography,
-  Avatar,
 } from "@mui/material";
-import {
-  Add as AddIcon,
-  Wallpaper as WallpaperIcon,
-  Refresh as RefreshIcon,
-} from "@mui/icons-material";
+import { Wallpaper as WallpaperIcon } from "@mui/icons-material";
 import { format } from "date-fns";
 import {
   PageHeader,
@@ -31,52 +27,38 @@ import {
   SearchBar,
   FilterTabs,
   STATUS_TABS,
+  RefreshButton,
+  AddButton,
 } from "../components/common";
 import {
   adminWallpaperApi,
   adminWallpaperCatApi,
 } from "../../services/adminApi";
 import { useAdminTableWithCat } from "../../hooks/useAdminTableWithCat";
+import { useToast } from "../context/ToastContext";
 
-// ─── CSS Pattern generator ────────────────────────────────────────────────────
-// Returns a CSS background value for known pattern names, or null
+// ─── CSS Pattern generator ─────────────────────────────────────────────────────
+
 function getCssPattern(title) {
   const t = (title || "").toLowerCase().replace(/[^a-z0-9]/g, "");
   const patterns = {
     polkadots: "radial-gradient(circle, #c7c7c7 1.5px, transparent 1.5px)",
-    polkadot: "radial-gradient(circle, #c7c7c7 1.5px, transparent 1.5px)",
     dots: "radial-gradient(circle, #c7c7c7 1.5px, transparent 1.5px)",
     finelines:
       "repeating-linear-gradient(90deg, #d0d0d0 0px, #d0d0d0 1px, transparent 1px, transparent 12px)",
-    fineline:
-      "repeating-linear-gradient(90deg, #d0d0d0 0px, #d0d0d0 1px, transparent 1px, transparent 12px)",
-    lines:
-      "repeating-linear-gradient(90deg, #d0d0d0 0px, #d0d0d0 1px, transparent 1px, transparent 12px)",
     moroccantile:
       "conic-gradient(at 25% 25%, #e8e8e8 90deg, transparent 90deg)",
-    moroccan: "conic-gradient(at 25% 25%, #e8e8e8 90deg, transparent 90deg)",
-    tile: "conic-gradient(at 25% 25%, #e8e8e8 90deg, transparent 90deg)",
     chevron:
       "repeating-linear-gradient(45deg, #d4d4d4 0px, #d4d4d4 2px, transparent 2px, transparent 12px), repeating-linear-gradient(-45deg, #d4d4d4 0px, #d4d4d4 2px, transparent 2px, transparent 12px)",
     stripes:
       "repeating-linear-gradient(45deg, #d4d4d4 0px, #d4d4d4 3px, transparent 3px, transparent 14px)",
-    diagonal:
-      "repeating-linear-gradient(45deg, #d4d4d4 0px, #d4d4d4 2px, transparent 2px, transparent 12px)",
     grid: "linear-gradient(#d4d4d4 1px, transparent 1px), linear-gradient(90deg, #d4d4d4 1px, transparent 1px)",
-    crosshatch:
-      "repeating-linear-gradient(0deg, #d4d4d4 0px, #d4d4d4 1px, transparent 1px, transparent 10px), repeating-linear-gradient(90deg, #d4d4d4 0px, #d4d4d4 1px, transparent 1px, transparent 10px)",
     honeycomb:
       "radial-gradient(circle at 50% 50%, #d4d4d4 2px, transparent 2px)",
-    zigzag:
-      "linear-gradient(135deg, #d4d4d4 25%, transparent 25%) -10px 0, linear-gradient(225deg, #d4d4d4 25%, transparent 25%) -10px 0",
     waves:
       "radial-gradient(circle at 100% 50%, transparent 20%, #e0e0e0 21%, #e0e0e0 34%, transparent 35%)",
-    plaid:
-      "repeating-linear-gradient(0deg, transparent, transparent 10px, #d4d4d4 10px, #d4d4d4 11px), repeating-linear-gradient(90deg, transparent, transparent 10px, #d4d4d4 10px, #d4d4d4 11px)",
   };
-  // Try exact match first
   if (patterns[t]) return { background: patterns[t], size: "14px 14px" };
-  // Partial match
   for (const [key, val] of Object.entries(patterns)) {
     if (t.includes(key) || key.includes(t))
       return { background: val, size: "14px 14px" };
@@ -84,14 +66,14 @@ function getCssPattern(title) {
   return null;
 }
 
-// Deterministic pastel color from title string
 function getTitleColor(title) {
   const hue =
     (title || "").split("").reduce((acc, c) => acc + c.charCodeAt(0), 0) % 360;
   return `hsl(${hue}, 35%, 80%)`;
 }
 
-// ─── WallpaperPreview component ───────────────────────────────────────────────
+// ─── WallpaperPreview ──────────────────────────────────────────────────────────
+
 function WallpaperPreview({
   value,
   title,
@@ -101,8 +83,6 @@ function WallpaperPreview({
   showLabel = false,
 }) {
   const val = (value || "").trim();
-
-  // 1. CSS color / gradient value
   const isColor =
     val.startsWith("#") ||
     val.startsWith("rgb") ||
@@ -110,6 +90,10 @@ function WallpaperPreview({
     val.startsWith("linear-gradient") ||
     val.startsWith("radial-gradient") ||
     val.startsWith("conic-gradient");
+  const isImage =
+    val.startsWith("http") ||
+    val.startsWith("/") ||
+    val.startsWith("data:image");
 
   if (isColor) {
     return (
@@ -120,19 +104,11 @@ function WallpaperPreview({
           borderRadius,
           background: val,
           border: "1px solid rgba(0,0,0,0.08)",
-          boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
           flexShrink: 0,
         }}
       />
     );
   }
-
-  // 2. Image URL
-  const isImage =
-    val.startsWith("http") ||
-    val.startsWith("/") ||
-    val.startsWith("data:image");
-
   if (isImage) {
     return (
       <Box
@@ -149,18 +125,13 @@ function WallpaperPreview({
           flexShrink: 0,
         }}
         onError={(e) => {
-          // On broken image → show pattern fallback
-          const parent = e.target.parentElement;
-          if (parent) {
-            e.target.style.display = "none";
-            parent.style.background = getTitleColor(title);
-          }
+          e.target.style.display = "none";
+          if (e.target.parentElement)
+            e.target.parentElement.style.background = getTitleColor(title);
         }}
       />
     );
   }
-
-  // 3. CSS Pattern based on title
   const pattern = getCssPattern(title);
   if (pattern) {
     return (
@@ -177,8 +148,6 @@ function WallpaperPreview({
       />
     );
   }
-
-  // 4. Fallback — unique pastel color from title name
   return (
     <Box
       sx={{
@@ -193,32 +162,19 @@ function WallpaperPreview({
         flexShrink: 0,
       }}
     >
-      <Box
-        sx={{
-          fontSize: showLabel ? "0.55rem" : "0.5rem",
-          fontWeight: 700,
-          color: "rgba(0,0,0,0.35)",
-          textAlign: "center",
-          px: 0.5,
-          lineHeight: 1.2,
-        }}
-      >
-        {showLabel ? (
-          (title || "").slice(0, 8)
-        ) : (
-          <WallpaperIcon sx={{ fontSize: 14, color: "rgba(0,0,0,0.25)" }} />
-        )}
-      </Box>
+      <WallpaperIcon sx={{ fontSize: 14, color: "rgba(0,0,0,0.25)" }} />
     </Box>
   );
 }
 
+// ─── Page ──────────────────────────────────────────────────────────────────────
+
 export default function WallpapersPage() {
   const {
     pagedRows,
-    filtered,
     categories,
     loading,
+    total,
     counts,
     filterCat,
     setFilterCat,
@@ -235,10 +191,11 @@ export default function WallpapersPage() {
     removeRow,
     refresh,
   } = useAdminTableWithCat({
-    dataFetcher: useCallback((catId) => adminWallpaperApi.getAll(catId), []),
+    dataFetcher: useCallback((params) => adminWallpaperApi.getAll(params), []),
     catFetcher: useCallback(() => adminWallpaperCatApi.getAll(), []),
-    searchField: "title",
   });
+
+  const toast = useToast();
 
   const [dialog, setDialog] = useState({
     open: false,
@@ -247,8 +204,8 @@ export default function WallpapersPage() {
   });
   const [form, setForm] = useState({
     title: "",
-    image_url: "",
-    category_id: "",
+    imageUrl: "",
+    categoryId: "",
     status: 1,
   });
   const [saving, setSaving] = useState(false);
@@ -259,18 +216,19 @@ export default function WallpapersPage() {
   const openCreate = () => {
     setForm({
       title: "",
-      image_url: "",
-      category_id: categories[0]?.id || "",
+      imageUrl: "",
+      categoryId: categories[0]?.id || "",
       status: 1,
     });
     setFormErr("");
     setDialog({ open: true, mode: "create", row: null });
   };
+
   const openEdit = (row) => {
     setForm({
       title: row.title || "",
-      image_url: row.image_url || "",
-      category_id: row.category?.id || "",
+      imageUrl: row.image_url || "",
+      categoryId: row.category?.id || "",
       status: row.status ?? 1,
     });
     setFormErr("");
@@ -282,30 +240,33 @@ export default function WallpapersPage() {
       setFormErr("Title is required.");
       return;
     }
-    if (!form.image_url.trim()) {
+    if (!form.imageUrl.trim()) {
       setFormErr("Image URL is required.");
       return;
     }
     setSaving(true);
     setFormErr("");
     try {
-      const input = {
+      const payload = {
         title: form.title,
-        image_url: form.image_url,
-        category_id: form.category_id,
+        imageUrl: form.imageUrl,
+        categoryId: form.categoryId,
         status: form.status,
       };
       if (dialog.mode === "create") {
-        const created = await adminWallpaperApi.create(input);
+        const created = await adminWallpaperApi.create(payload);
         prependRow(created);
         setPage(0);
+        toast.success("Wallpaper created successfully!");
       } else {
-        const updated = await adminWallpaperApi.update(dialog.row.id, input);
+        const updated = await adminWallpaperApi.update(dialog.row.id, payload);
         replaceRow(updated.id, updated);
+        toast.success("Wallpaper updated successfully!");
       }
       setDialog((d) => ({ ...d, open: false }));
     } catch (e) {
       setFormErr(e.message || "Save failed.");
+      toast.error(e.message || "Failed to save wallpaper.");
     }
     setSaving(false);
   };
@@ -316,7 +277,10 @@ export default function WallpapersPage() {
     try {
       await adminWallpaperApi.delete(deleteTarget.id);
       removeRow(deleteTarget.id);
-    } catch (_) {}
+      toast.success("Wallpaper deleted.");
+    } catch (_) {
+      toast.error("Failed to delete wallpaper.");
+    }
     setDeleteLoading(false);
     setDeleteTarget(null);
   };
@@ -390,39 +354,8 @@ export default function WallpapersPage() {
         ]}
         actions={
           <Stack direction="row" spacing={1}>
-            <Button
-              variant="outlined"
-              size="small"
-              startIcon={<RefreshIcon sx={{ fontSize: 15 }} />}
-              onClick={refresh}
-              disabled={loading}
-              sx={{
-                borderRadius: "8px",
-                borderColor: "#e5e7eb",
-                color: "#374151",
-                fontWeight: 600,
-                textTransform: "none",
-                "&:hover": { borderColor: "#d1d5db", bgcolor: "#f9fafb" },
-              }}
-            >
-              Refresh
-            </Button>
-            <Button
-              variant="contained"
-              size="small"
-              startIcon={<AddIcon sx={{ fontSize: 15 }} />}
-              onClick={openCreate}
-              sx={{
-                borderRadius: "8px",
-                fontWeight: 600,
-                textTransform: "none",
-                bgcolor: "#111827",
-                "&:hover": { bgcolor: "#374151" },
-                boxShadow: "none",
-              }}
-            >
-              Add Wallpaper
-            </Button>
+            <RefreshButton onClick={refresh} loading={loading} />
+            <AddButton onClick={openCreate} label="Add Wallpaper" />
           </Stack>
         }
       />
@@ -467,15 +400,15 @@ export default function WallpapersPage() {
         columns={columns}
         rows={pagedRows}
         loading={loading}
-        totalCount={filtered.length}
+        totalCount={total}
         page={page}
         rowsPerPage={rpp}
-        onPageChange={(p) => setPage(p)}
+        onPageChange={setPage}
         onRowsPerPageChange={(v) => {
           setRpp(v);
           setPage(0);
         }}
-        rowsPerPageOptions={[5, 10, 20, 50]}
+        rowsPerPageOptions={[10, 20, 50, 100]}
         emptyMessage="No wallpapers found"
       />
 
@@ -499,20 +432,19 @@ export default function WallpapersPage() {
           />
           <TextField
             label="Image URL or Color / Gradient"
-            value={form.image_url}
+            value={form.imageUrl}
             onChange={(e) =>
-              setForm((f) => ({ ...f, image_url: e.target.value }))
+              setForm((f) => ({ ...f, imageUrl: e.target.value }))
             }
             fullWidth
             size="small"
-            placeholder="https://... or linear-gradient(135deg,#FF6B6B,#FFA500)"
+            placeholder="https://… or linear-gradient(135deg,#FF6B6B,#FFA500)"
             helperText="Paste an image URL, hex color, or CSS gradient"
             sx={{ "& .MuiOutlinedInput-root": { borderRadius: "8px" } }}
           />
-          {/* Smart live preview — image / color / CSS pattern / title fallback */}
-          {(form.image_url || form.title) && (
+          {(form.imageUrl || form.title) && (
             <WallpaperPreview
-              value={form.image_url}
+              value={form.imageUrl}
               title={form.title}
               width="100%"
               height={90}
@@ -523,10 +455,10 @@ export default function WallpapersPage() {
           <FormControl size="small" fullWidth>
             <InputLabel>Category</InputLabel>
             <Select
-              value={form.category_id}
+              value={form.categoryId}
               label="Category"
               onChange={(e) =>
-                setForm((f) => ({ ...f, category_id: e.target.value }))
+                setForm((f) => ({ ...f, categoryId: e.target.value }))
               }
               sx={{ borderRadius: "8px" }}
             >

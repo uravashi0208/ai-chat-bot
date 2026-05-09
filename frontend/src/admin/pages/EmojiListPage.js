@@ -1,11 +1,12 @@
 /**
- * admin/pages/EmojiListPage.js — pagination + FilterTabs (All/Active/Inactive)
+ * admin/pages/EmojiListPage.js
+ *
+ * Server-paginated emoji list with category filter and status tabs.
  */
 import React, { useState, useCallback } from "react";
 import {
   Box,
   Stack,
-  Button,
   TextField,
   MenuItem,
   Select,
@@ -13,11 +14,7 @@ import {
   FormControl,
   Typography,
 } from "@mui/material";
-import {
-  Add as AddIcon,
-  EmojiEmotions as EmojiIcon,
-  Refresh as RefreshIcon,
-} from "@mui/icons-material";
+import { EmojiEmotions as EmojiIcon } from "@mui/icons-material";
 import { format } from "date-fns";
 import {
   PageHeader,
@@ -30,16 +27,19 @@ import {
   SearchBar,
   FilterTabs,
   STATUS_TABS,
+  RefreshButton,
+  AddButton,
 } from "../components/common";
 import { adminEmojiApi, adminEmojiCatApi } from "../../services/adminApi";
 import { useAdminTableWithCat } from "../../hooks/useAdminTableWithCat";
+import { useToast } from "../context/ToastContext";
 
 export default function EmojiListPage() {
   const {
     pagedRows,
-    filtered,
     categories,
     loading,
+    total,
     counts,
     filterCat,
     setFilterCat,
@@ -56,31 +56,33 @@ export default function EmojiListPage() {
     removeRow,
     refresh,
   } = useAdminTableWithCat({
-    dataFetcher: useCallback((catId) => adminEmojiApi.getAll(catId), []),
+    dataFetcher: useCallback((params) => adminEmojiApi.getAll(params), []),
     catFetcher: useCallback(() => adminEmojiCatApi.getAll(), []),
-    searchField: "emoji",
   });
+
+  const toast = useToast();
 
   const [dialog, setDialog] = useState({
     open: false,
     mode: "create",
     row: null,
   });
-  const [form, setForm] = useState({ emoji: "", category_id: "", status: 1 });
+  const [form, setForm] = useState({ emoji: "", categoryId: "", status: 1 });
   const [saving, setSaving] = useState(false);
   const [formErr, setFormErr] = useState("");
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   const openCreate = () => {
-    setForm({ emoji: "", category_id: categories[0]?.id || "", status: 1 });
+    setForm({ emoji: "", categoryId: categories[0]?.id || "", status: 1 });
     setFormErr("");
     setDialog({ open: true, mode: "create", row: null });
   };
+
   const openEdit = (row) => {
     setForm({
       emoji: row.emoji || "",
-      category_id: row.category?.id || "",
+      categoryId: row.category?.id || "",
       status: row.status ?? 1,
     });
     setFormErr("");
@@ -95,25 +97,25 @@ export default function EmojiListPage() {
     setSaving(true);
     setFormErr("");
     try {
+      const payload = {
+        emoji: form.emoji,
+        categoryId: form.categoryId,
+        status: form.status,
+      };
       if (dialog.mode === "create") {
-        const created = await adminEmojiApi.create({
-          emoji: form.emoji,
-          category_id: form.category_id,
-          status: form.status,
-        });
+        const created = await adminEmojiApi.create(payload);
         prependRow(created);
         setPage(0);
+        toast.success("Emoji created successfully!");
       } else {
-        const updated = await adminEmojiApi.update(dialog.row.id, {
-          emoji: form.emoji,
-          category_id: form.category_id,
-          status: form.status,
-        });
+        const updated = await adminEmojiApi.update(dialog.row.id, payload);
         replaceRow(updated.id, updated);
+        toast.success("Emoji updated successfully!");
       }
       setDialog((d) => ({ ...d, open: false }));
     } catch (e) {
       setFormErr(e.message || "Save failed.");
+      toast.error(e.message || "Failed to save emoji.");
     }
     setSaving(false);
   };
@@ -124,7 +126,10 @@ export default function EmojiListPage() {
     try {
       await adminEmojiApi.delete(deleteTarget.id);
       removeRow(deleteTarget.id);
-    } catch (_) {}
+      toast.success("Emoji deleted.");
+    } catch (_) {
+      toast.error("Failed to delete emoji.");
+    }
     setDeleteLoading(false);
     setDeleteTarget(null);
   };
@@ -187,39 +192,8 @@ export default function EmojiListPage() {
         ]}
         actions={
           <Stack direction="row" spacing={1}>
-            <Button
-              variant="outlined"
-              size="small"
-              startIcon={<RefreshIcon sx={{ fontSize: 15 }} />}
-              onClick={refresh}
-              disabled={loading}
-              sx={{
-                borderRadius: "8px",
-                borderColor: "#e5e7eb",
-                color: "#374151",
-                fontWeight: 600,
-                textTransform: "none",
-                "&:hover": { borderColor: "#d1d5db", bgcolor: "#f9fafb" },
-              }}
-            >
-              Refresh
-            </Button>
-            <Button
-              variant="contained"
-              size="small"
-              startIcon={<AddIcon sx={{ fontSize: 15 }} />}
-              onClick={openCreate}
-              sx={{
-                borderRadius: "8px",
-                fontWeight: 600,
-                textTransform: "none",
-                bgcolor: "#111827",
-                "&:hover": { bgcolor: "#374151" },
-                boxShadow: "none",
-              }}
-            >
-              Add Emoji
-            </Button>
+            <RefreshButton onClick={refresh} loading={loading} />
+            <AddButton onClick={openCreate} label="Add Emoji" />
           </Stack>
         }
       />
@@ -264,15 +238,15 @@ export default function EmojiListPage() {
         columns={columns}
         rows={pagedRows}
         loading={loading}
-        totalCount={filtered.length}
+        totalCount={total}
         page={page}
         rowsPerPage={rpp}
-        onPageChange={(p) => setPage(p)}
+        onPageChange={setPage}
         onRowsPerPageChange={(v) => {
           setRpp(v);
           setPage(0);
         }}
-        rowsPerPageOptions={[5, 10, 20, 50]}
+        rowsPerPageOptions={[10, 20, 50, 100]}
         emptyMessage="No emojis found"
       />
 
@@ -303,10 +277,10 @@ export default function EmojiListPage() {
           <FormControl size="small" fullWidth>
             <InputLabel>Category</InputLabel>
             <Select
-              value={form.category_id}
+              value={form.categoryId}
               label="Category"
               onChange={(e) =>
-                setForm((f) => ({ ...f, category_id: e.target.value }))
+                setForm((f) => ({ ...f, categoryId: e.target.value }))
               }
               sx={{ borderRadius: "8px" }}
             >

@@ -33,6 +33,7 @@ import {
 } from "../components/common";
 import { adminThemeColorApi, adminThemeCatApi } from "../../services/adminApi";
 import { useAdminTableWithCat } from "../../hooks/useAdminTableWithCat";
+import { useToast } from "../context/ToastContext";
 
 export default function ThemeColorsPage() {
   const {
@@ -40,6 +41,7 @@ export default function ThemeColorsPage() {
     filtered,
     categories,
     loading,
+    total,
     counts,
     filterCat,
     setFilterCat,
@@ -61,15 +63,17 @@ export default function ThemeColorsPage() {
     searchField: "color_name",
   });
 
+  const toast = useToast();
+
   const [dialog, setDialog] = useState({
     open: false,
     mode: "create",
     row: null,
   });
   const [form, setForm] = useState({
-    color_name: "",
-    color_code: "#6366f1",
-    category_id: "",
+    colorName: "",
+    colorCode: "#6366f1",
+    categoryId: "",
     status: 1,
   });
   const [saving, setSaving] = useState(false);
@@ -79,9 +83,9 @@ export default function ThemeColorsPage() {
 
   const openCreate = () => {
     setForm({
-      color_name: "",
-      color_code: "#6366f1",
-      category_id: categories[0]?.id || "",
+      colorName: "",
+      colorCode: "#6366f1",
+      categoryId: categories[0]?.id || "",
       status: 1,
     });
     setFormErr("");
@@ -89,9 +93,9 @@ export default function ThemeColorsPage() {
   };
   const openEdit = (row) => {
     setForm({
-      color_name: row.color_name || "",
-      color_code: row.color_code || "#6366f1",
-      category_id: row.category?.id || "",
+      colorName: row.color_name || "",
+      colorCode: row.color_code || "#6366f1",
+      categoryId: row.category?.id || "",
       status: row.status ?? 1,
     });
     setFormErr("");
@@ -99,7 +103,7 @@ export default function ThemeColorsPage() {
   };
 
   const handleSave = async () => {
-    if (!form.color_name.trim()) {
+    if (!form.colorName.trim()) {
       setFormErr("Color name is required.");
       return;
     }
@@ -107,22 +111,25 @@ export default function ThemeColorsPage() {
     setFormErr("");
     try {
       const input = {
-        color_name: form.color_name,
-        color_code: form.color_code,
-        category_id: form.category_id,
+        colorName: form.colorName,
+        colorCode: form.colorCode,
+        categoryId: form.categoryId,
         status: form.status,
       };
       if (dialog.mode === "create") {
         const created = await adminThemeColorApi.create(input);
         prependRow(created);
         setPage(0);
+        toast.success("Color created successfully!");
       } else {
         const updated = await adminThemeColorApi.update(dialog.row.id, input);
         replaceRow(updated.id, updated);
+        toast.success("Color updated successfully!");
       }
       setDialog((d) => ({ ...d, open: false }));
     } catch (e) {
       setFormErr(e.message || "Save failed.");
+      toast.error(e.message || "Failed to save color.");
     }
     setSaving(false);
   };
@@ -133,7 +140,10 @@ export default function ThemeColorsPage() {
     try {
       await adminThemeColorApi.delete(deleteTarget.id);
       removeRow(deleteTarget.id);
-    } catch (_) {}
+      toast.success("Color deleted.");
+    } catch (_) {
+      toast.error("Failed to delete color.");
+    }
     setDeleteLoading(false);
     setDeleteTarget(null);
   };
@@ -315,7 +325,7 @@ export default function ThemeColorsPage() {
         columns={columns}
         rows={pagedRows}
         loading={loading}
-        totalCount={filtered.length}
+        totalCount={total}
         page={page}
         rowsPerPage={rpp}
         onPageChange={(p) => setPage(p)}
@@ -339,9 +349,9 @@ export default function ThemeColorsPage() {
         <Stack spacing={2.5} sx={{ pt: 0.5 }}>
           <TextField
             label="Color Name"
-            value={form.color_name}
+            value={form.colorName}
             onChange={(e) =>
-              setForm((f) => ({ ...f, color_name: e.target.value }))
+              setForm((f) => ({ ...f, colorName: e.target.value }))
             }
             fullWidth
             size="small"
@@ -356,16 +366,16 @@ export default function ThemeColorsPage() {
                 height: 52,
                 borderRadius: "10px",
                 flexShrink: 0,
-                background: form.color_code || "#e5e7eb",
+                background: form.colorCode || "#e5e7eb",
                 border: "1px solid rgba(0,0,0,0.1)",
                 boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
               }}
             />
             <TextField
               label="Hex Code or Gradient"
-              value={form.color_code}
+              value={form.colorCode}
               onChange={(e) =>
-                setForm((f) => ({ ...f, color_code: e.target.value }))
+                setForm((f) => ({ ...f, colorCode: e.target.value }))
               }
               fullWidth
               size="small"
@@ -384,10 +394,10 @@ export default function ThemeColorsPage() {
           <FormControl size="small" fullWidth>
             <InputLabel>Category</InputLabel>
             <Select
-              value={form.category_id}
+              value={form.categoryId}
               label="Category"
               onChange={(e) =>
-                setForm((f) => ({ ...f, category_id: e.target.value }))
+                setForm((f) => ({ ...f, categoryId: e.target.value }))
               }
               sx={{ borderRadius: "8px" }}
             >

@@ -1,13 +1,21 @@
 /**
  * admin/pages/UsersPage.js
  *
- * Matches screenshot design:
- * - Filter tabs: All (20) / Active (2) / Pending (10) / Banned (6) / Rejected (2)
- * - Toolbar: Role dropdown, Search input, column options (⋮)
- * - Table: Checkbox, Name (avatar+email), Phone, Company, Role, Status, Edit (✏), ⋮
- * - Footer: Dense toggle, Rows per page, 1-5 of 20, < >
+ * Server-paginated user list with search and status filter tabs.
+ *
+ * Design:
+ *   - Filter tabs: All / Online / Offline  (counts from server total)
+ *   - Toolbar: Search input, column options
+ *   - Table: Name (avatar+email), Phone, Company, Role, Status
+ *   - Footer: Dense toggle, Rows per page, pagination
  */
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import {
   Box,
   Stack,
@@ -22,10 +30,9 @@ import {
 import {
   Refresh as RefreshIcon,
   MoreVert as MoreVertIcon,
-  Edit as EditIcon,
+  People as PeopleIcon,
   Block as BlockIcon,
   CheckCircle as UnblockIcon,
-  People as PeopleIcon,
 } from "@mui/icons-material";
 import { format } from "date-fns";
 import {
@@ -37,21 +44,22 @@ import {
   ConfirmDialog,
   FilterTabs,
   TableToolbar,
+  RefreshButton,
 } from "../components/common";
-import { adminUsersApi } from "../../services/adminApi";
+import { adminUsersApi, ADMIN_PAGE_SIZE } from "../../services/adminApi";
+import { useAdminTable } from "../../hooks/useAdminTable";
 
-const PAGE_SIZE = 5;
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-// status numeric map: 1=active, 0=inactive, we also handle string statuses from API
 function getUserStatusLabel(u) {
-  if (u.status === "online") return "online";
-  return "offline";
+  return u?.status === "online" ? "online" : "offline";
 }
 
-// Row action menu
-function RowMenu({ row, onToggleStatus }) {
+// ─── Row action menu ──────────────────────────────────────────────────────────
+
+function RowMenu({ row, onToggleBan }) {
   const [anchor, setAnchor] = useState(null);
-  const statusLabel = getUserStatusLabel(row);
+  const isBanned = row.status === 0;
 
   return (
     <>
@@ -69,80 +77,81 @@ function RowMenu({ row, onToggleStatus }) {
       >
         <MoreVertIcon sx={{ fontSize: 16 }} />
       </IconButton>
+      <Menu
+        anchorEl={anchor}
+        open={Boolean(anchor)}
+        onClose={() => setAnchor(null)}
+        PaperProps={{
+          sx: { borderRadius: "10px", border: "1px solid #e9eaf0" },
+        }}
+      >
+        <MenuItem
+          onClick={() => {
+            setAnchor(null);
+            onToggleBan(row);
+          }}
+          sx={{
+            fontSize: "0.875rem",
+            color: isBanned ? "#10b981" : "#ef4444",
+            gap: 1,
+          }}
+        >
+          {isBanned ? (
+            <UnblockIcon sx={{ fontSize: 16 }} />
+          ) : (
+            <BlockIcon sx={{ fontSize: 16 }} />
+          )}
+          {isBanned ? "Unban User" : "Ban User"}
+        </MenuItem>
+      </Menu>
     </>
   );
 }
 
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
 export default function UsersPage() {
-  const [users, setUsers] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(0);
-  const [rpp, setRpp] = useState(PAGE_SIZE);
-  const [search, setSearch] = useState("");
-  const [statusTab, setStatusTab] = useState("all");
-  const [loading, setLoading] = useState(false);
+  const {
+    rows,
+    total,
+    loading,
+    page,
+    setPage,
+    rowsPerPage: rpp,
+    setRowsPerPage: setRpp,
+    search,
+    setSearch,
+    statusTab,
+    setStatusTab,
+    counts,
+    replaceRow,
+    refresh,
+  } = useAdminTable({
+    fetcher: useCallback(
+      (limit, offset, search) => adminUsersApi.getAll(limit, offset, search),
+      [],
+    ),
+    responseKey: { rows: "users", total: "total" },
+    serverSearch: true,
+    statusField: null, // status filtering is handled via tab logic below
+    defaultPageSize: ADMIN_PAGE_SIZE,
+  });
+
   const [confirm, setConfirm] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const [colMenuAnchor, setColMenuAnchor] = useState(null);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await adminUsersApi.getAll(100, 0, search);
-      setUsers(data.users || []);
-      setTotal(data.total || 0);
-    } catch (_) {}
-    setLoading(false);
-  }, [search]);
-
-  useEffect(() => {
-    load();
-  }, [load]);
-  useEffect(() => {
-    setPage(0);
-  }, [search, statusTab]);
-
-  // Client-side filtering by status tab
-  const filtered = useMemo(() => {
-    let arr = users;
-    if (statusTab !== "all") {
-      arr = arr.filter((u) => getUserStatusLabel(u) === statusTab);
-    }
-
-    return arr;
-  }, [users, statusTab]);
-
-  // Count per tab
-  const counts = useMemo(
-    () => ({
-      all: users.length,
-      online: users.filter((u) => getUserStatusLabel(u) === "online").length,
-      offline: users.filter((u) => getUserStatusLabel(u) === "offline").length,
-    }),
-    [users],
-  );
-
-  // Paginate the filtered result client-side
-  const pagedRows = filtered.slice(page * rpp, page * rpp + rpp);
-
-  const handleToggleStatus = async () => {
+  const handleToggleBan = async () => {
     if (!confirm) return;
     setActionLoading(true);
     try {
-      const nextStatus = getUserStatusLabel(confirm) === "banned" ? 1 : 0;
+      const nextStatus = confirm.status === 0 ? 1 : 0;
       const updated = await adminUsersApi.setStatus(confirm.id, nextStatus);
-      setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)));
+      replaceRow(updated.id, updated);
     } catch (_) {}
     setActionLoading(false);
     setConfirm(null);
   };
-
-  // Role options from data
-  const roleOptions = useMemo(() => {
-    return users.map((r) => ({ value: r.status, label: r.status }));
-  }, [users]);
-
-  // Column options menu
-  const [colMenuAnchor, setColMenuAnchor] = useState(null);
 
   const columns = [
     {
@@ -169,16 +178,6 @@ export default function UsersPage() {
       ),
     },
     {
-      id: "company",
-      label: "Company",
-      minWidth: 160,
-      render: (r) => (
-        <Typography variant="body2" sx={{ color: "#374151" }}>
-          {r.company || "—"}
-        </Typography>
-      ),
-    },
-    {
       id: "role",
       label: "Role",
       minWidth: 140,
@@ -194,6 +193,20 @@ export default function UsersPage() {
       minWidth: 100,
       render: (r) => <StatusBadge value={getUserStatusLabel(r)} />,
     },
+    {
+      id: "joined",
+      label: "Joined",
+      minWidth: 120,
+      render: (r) =>
+        r.created_at ? format(new Date(r.created_at), "dd MMM yyyy") : "—",
+    },
+    {
+      id: "actions",
+      label: "",
+      align: "right",
+      minWidth: 60,
+      render: (row) => <RowMenu row={row} onToggleBan={(r) => setConfirm(r)} />,
+    },
   ];
 
   return (
@@ -206,29 +219,10 @@ export default function UsersPage() {
           { label: "Dashboard", href: "/admin/dashboard" },
           { label: "Users" },
         ]}
-        actions={
-          <Button
-            variant="outlined"
-            size="small"
-            startIcon={<RefreshIcon sx={{ fontSize: 15 }} />}
-            onClick={load}
-            disabled={loading}
-            sx={{
-              borderRadius: "8px",
-              borderColor: "#e5e7eb",
-              color: "#374151",
-              fontSize: "0.8125rem",
-              fontWeight: 600,
-              textTransform: "none",
-              "&:hover": { borderColor: "#d1d5db", bgcolor: "#f9fafb" },
-            }}
-          >
-            Refresh
-          </Button>
-        }
+        actions={<RefreshButton onClick={refresh} loading={loading} />}
       />
 
-      {/* ── Filter tabs ── */}
+      {/* Filter tabs */}
       <FilterTabs
         tabs={[
           { label: "All", value: "all" },
@@ -240,10 +234,10 @@ export default function UsersPage() {
           setStatusTab(v);
           setPage(0);
         }}
-        counts={counts}
+        counts={{ all: total, online: 0, offline: 0 }}
       />
 
-      {/* ── Toolbar ── */}
+      {/* Toolbar */}
       <TableToolbar>
         <SearchBar
           value={search}
@@ -251,7 +245,7 @@ export default function UsersPage() {
             setSearch(v);
             setPage(0);
           }}
-          placeholder="Search..."
+          placeholder="Search users…"
           sx={{ flex: 1, maxWidth: 460 }}
         />
         <Box sx={{ ml: "auto" }}>
@@ -274,11 +268,7 @@ export default function UsersPage() {
             open={Boolean(colMenuAnchor)}
             onClose={() => setColMenuAnchor(null)}
             PaperProps={{
-              sx: {
-                borderRadius: "10px",
-                border: "1px solid #e9eaf0",
-                boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-              },
+              sx: { borderRadius: "10px", border: "1px solid #e9eaf0" },
             }}
           >
             <MenuItem
@@ -288,21 +278,23 @@ export default function UsersPage() {
               COLUMNS
             </MenuItem>
             <Divider />
-            {["Name", "Phone", "Company", "Role", "Status"].map((col) => (
-              <MenuItem key={col} sx={{ fontSize: "0.875rem" }}>
-                {col}
-              </MenuItem>
-            ))}
+            {["Name", "Phone", "Company", "Role", "Status", "Joined"].map(
+              (col) => (
+                <MenuItem key={col} sx={{ fontSize: "0.875rem" }}>
+                  {col}
+                </MenuItem>
+              ),
+            )}
           </Menu>
         </Box>
       </TableToolbar>
 
-      {/* ── Table ── */}
+      {/* Table */}
       <DataTable
         columns={columns}
-        rows={pagedRows}
+        rows={rows}
         loading={loading}
-        totalCount={filtered.length}
+        totalCount={total}
         page={page}
         rowsPerPage={rpp}
         onPageChange={setPage}
@@ -310,33 +302,25 @@ export default function UsersPage() {
           setRpp(v);
           setPage(0);
         }}
-        rowsPerPageOptions={[5, 10, 20, 50]}
+        rowsPerPageOptions={[10, 20, 50, 100]}
         selectable
         emptyMessage="No users found"
         rowKey="id"
       />
 
-      {/* ── Confirm ban/unban ── */}
+      {/* Confirm ban/unban */}
       <ConfirmDialog
         open={Boolean(confirm)}
-        title={
-          getUserStatusLabel(confirm || {}) === "banned"
-            ? "Unban User"
-            : "Ban User"
-        }
+        title={confirm?.status === 0 ? "Unban User" : "Ban User"}
         message={
-          getUserStatusLabel(confirm || {}) === "banned"
+          confirm?.status === 0
             ? `Restore access for "${confirm?.full_name || confirm?.username}"?`
-            : `Are you sure you want to ban "${confirm?.full_name || confirm?.username}"? They will no longer be able to log in.`
+            : `Ban "${confirm?.full_name || confirm?.username}"? They will no longer be able to log in.`
         }
-        confirmLabel={
-          getUserStatusLabel(confirm || {}) === "banned" ? "Unban" : "Ban"
-        }
-        confirmColor={
-          getUserStatusLabel(confirm || {}) === "banned" ? "success" : "error"
-        }
+        confirmLabel={confirm?.status === 0 ? "Unban" : "Ban"}
+        confirmColor={confirm?.status === 0 ? "success" : "error"}
         loading={actionLoading}
-        onConfirm={handleToggleStatus}
+        onConfirm={handleToggleBan}
         onClose={() => setConfirm(null)}
       />
     </Box>

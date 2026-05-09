@@ -273,18 +273,37 @@ export const adminService = {
     return data;
   },
 
-  async listEmojis(categoryId) {
+  async listEmojis(categoryId, { limit = 20, offset = 0, search } = {}) {
+    // ── Count queries (for accurate tab counts across ALL pages) ──────────────
+    let countBase = supabase
+      .from("emojis")
+      .select("id, status", { count: "exact", head: false })
+      .neq("status", 2);
+    if (categoryId) countBase = countBase.eq("category_id", categoryId);
+    if (search) countBase = countBase.ilike("emoji", `%${search}%`);
+
+    const { data: allForCount, error: countErr } = await countBase;
+    if (countErr) throw new Error("Failed to fetch emoji counts.");
+
+    const total = allForCount?.length ?? 0;
+    const totalActive = allForCount?.filter((r) => r.status === 1).length ?? 0;
+    const totalInactive =
+      allForCount?.filter((r) => r.status === 0).length ?? 0;
+
+    // ── Paginated items ───────────────────────────────────────────────────────
     let query = supabase
       .from("emojis")
       .select(`*, category:emoji_categories(id, category_name)`)
       .neq("status", 2)
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .range(offset, offset + limit - 1);
 
     if (categoryId) query = query.eq("category_id", categoryId);
+    if (search) query = query.ilike("emoji", `%${search}%`);
 
     const { data, error } = await query;
     if (error) throw new Error("Failed to fetch emojis.");
-    return data ?? [];
+    return { items: data ?? [], total, totalActive, totalInactive };
   },
 
   async updateEmoji(id, fields) {
@@ -381,16 +400,37 @@ export const adminService = {
     return data;
   },
 
-  async listThemeColors(categoryId) {
+  async listThemeColors(categoryId, { limit = 20, offset = 0, search } = {}) {
+    // ── Count queries ─────────────────────────────────────────────────────────
+    let countBase = supabase
+      .from("theme_colors")
+      .select("id, status", { count: "exact", head: false })
+      .neq("status", 2);
+    if (categoryId) countBase = countBase.eq("category_id", categoryId);
+    if (search) countBase = countBase.ilike("color_name", `%${search}%`);
+
+    const { data: allForCount, error: countErr } = await countBase;
+    if (countErr) throw new Error("Failed to fetch theme color counts.");
+
+    const total = allForCount?.length ?? 0;
+    const totalActive = allForCount?.filter((r) => r.status === 1).length ?? 0;
+    const totalInactive =
+      allForCount?.filter((r) => r.status === 0).length ?? 0;
+
+    // ── Paginated items ───────────────────────────────────────────────────────
     let query = supabase
       .from("theme_colors")
       .select(`*, category:theme_color_categories(id, category_name)`)
       .neq("status", 2)
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .range(offset, offset + limit - 1);
+
     if (categoryId) query = query.eq("category_id", categoryId);
+    if (search) query = query.ilike("color_name", `%${search}%`);
+
     const { data, error } = await query;
     if (error) throw new Error("Failed to fetch theme colors.");
-    return data ?? [];
+    return { items: data ?? [], total, totalActive, totalInactive };
   },
 
   async updateThemeColor(id, fields) {
@@ -486,16 +526,37 @@ export const adminService = {
     return data;
   },
 
-  async listWallpapers(categoryId) {
+  async listWallpapers(categoryId, { limit = 20, offset = 0, search } = {}) {
+    // ── Count queries ─────────────────────────────────────────────────────────
+    let countBase = supabase
+      .from("chat_wallpapers")
+      .select("id, status", { count: "exact", head: false })
+      .neq("status", 2);
+    if (categoryId) countBase = countBase.eq("category_id", categoryId);
+    if (search) countBase = countBase.ilike("title", `%${search}%`);
+
+    const { data: allForCount, error: countErr } = await countBase;
+    if (countErr) throw new Error("Failed to fetch wallpaper counts.");
+
+    const total = allForCount?.length ?? 0;
+    const totalActive = allForCount?.filter((r) => r.status === 1).length ?? 0;
+    const totalInactive =
+      allForCount?.filter((r) => r.status === 0).length ?? 0;
+
+    // ── Paginated items ───────────────────────────────────────────────────────
     let query = supabase
       .from("chat_wallpapers")
       .select(`*, category:wallpaper_categories(id, category_name)`)
       .neq("status", 2)
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .range(offset, offset + limit - 1);
+
     if (categoryId) query = query.eq("category_id", categoryId);
+    if (search) query = query.ilike("title", `%${search}%`);
+
     const { data, error } = await query;
     if (error) throw new Error("Failed to fetch wallpapers.");
-    return data ?? [];
+    return { items: data ?? [], total, totalActive, totalInactive };
   },
 
   async updateWallpaper(id, fields) {

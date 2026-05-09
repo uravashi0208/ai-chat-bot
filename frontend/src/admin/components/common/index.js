@@ -1164,3 +1164,51 @@ export const STATUS_TABS = [
 ];
 
 // ─── Re-export nothing extra — import icons directly from @mui/icons-material ─
+
+// ─── RefreshButton ────────────────────────────────────────────────────────────
+// Reusable "Refresh" button used in PageHeader.actions across all admin pages.
+export function RefreshButton({ onClick, loading, label = "Refresh" }) {
+  return (
+    <Button
+      variant="outlined"
+      size="small"
+      startIcon={<RefreshIcon sx={{ fontSize: 15 }} />}
+      onClick={onClick}
+      disabled={loading}
+      sx={{
+        borderRadius: "8px",
+        borderColor: "#e5e7eb",
+        color: "#374151",
+        fontSize: "0.8125rem",
+        fontWeight: 600,
+        textTransform: "none",
+        "&:hover": { borderColor: "#d1d5db", bgcolor: "#f9fafb" },
+      }}
+    >
+      {label}
+    </Button>
+  );
+}
+
+// ─── AddButton ────────────────────────────────────────────────────────────────
+// Reusable "Add …" button used in PageHeader.actions across all admin pages.
+export function AddButton({ onClick, label = "Add" }) {
+  return (
+    <Button
+      variant="contained"
+      size="small"
+      startIcon={<AddIcon sx={{ fontSize: 15 }} />}
+      onClick={onClick}
+      sx={{
+        borderRadius: "8px",
+        fontWeight: 600,
+        textTransform: "none",
+        bgcolor: "#111827",
+        "&:hover": { bgcolor: "#374151" },
+        boxShadow: "none",
+      }}
+    >
+      {label}
+    </Button>
+  );
+}

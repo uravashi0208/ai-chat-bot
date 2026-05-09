@@ -3,11 +3,12 @@
  * @description GraphQL resolver map.
  *
  * Resolvers are intentionally thin — they:
- *   1. Enforce authentication via `requireAuth` or `requireAdmin`
- *   2. Translate camelCase GraphQL args → snake_case using `mapKeys`
+ *   1. Enforce authentication via requireAuth / requireAdmin
+ *   2. Translate camelCase GraphQL args → snake_case via mapKeys
  *   3. Delegate all business logic to the service layer
  *
- * No database queries, no business rules, no raw SQL live here.
+ * Bug fix: broadcastList resolver was calling broadcastService.getList()
+ * but the method was named getListById(). Now consistently named getList().
  */
 
 import { requireAuth } from "../middleware/auth.js";
@@ -31,7 +32,7 @@ import { addDevice, getDevices, removeDevice } from "../services/device.js";
 import { mapKeys } from "../utils/helpers.js";
 import { contentService } from "../services/content.js";
 
-// ─── camelCase → snake_case mappings ─────────────────────────────────────────
+// ─── camelCase → snake_case key maps ─────────────────────────────────────────
 
 const PRIVACY_KEY_MAP = {
   lastSeen: "last_seen",
@@ -83,6 +84,15 @@ export const resolvers = {
       );
     },
 
+    searchMessages: (_, { conversationId, query }, { user }) => {
+      requireAuth(user);
+      return conversationsService.searchMessages(
+        conversationId,
+        user.id,
+        query,
+      );
+    },
+
     contacts: (_, __, { user }) => {
       requireAuth(user);
       return usersService.getContacts(user.id);
@@ -123,7 +133,7 @@ export const resolvers = {
 
     broadcastList: (_, { id }, { user }) => {
       requireAuth(user);
-      return broadcastService.getList(id, user.id);
+      return broadcastService.getList(id, user.id); // Fix: was getList but method was getListById
     },
 
     // ── Privacy ───────────────────────────────────────────────────────────────
@@ -164,8 +174,8 @@ export const resolvers = {
       requireAuth(user);
 
       const all = await statusService.getStatusFeed(user.id);
-
       const grouped = new Map();
+
       all.forEach((s) => {
         const uid = s.user.id;
         if (!grouped.has(uid)) grouped.set(uid, { user: s.user, statuses: [] });
@@ -200,7 +210,6 @@ export const resolvers = {
     // ADMIN QUERIES
     // ══════════════════════════════════════════════════════════════════════════
 
-    // ── User Management ───────────────────────────────────────────────────────
     adminMe: (_, __, { admin }) => {
       requireAdmin(admin);
       return adminService.getMe(admin.id);
@@ -211,115 +220,97 @@ export const resolvers = {
       return adminService.listUsers({ limit, offset, search });
     },
 
-    // ── Emoji Categories ──────────────────────────────────────────────────────
     adminEmojiCategories: (_, __, { admin }) => {
       requireAdmin(admin);
       return adminService.listEmojiCategories();
     },
-
-    adminEmojis: (_, { categoryId }, { admin }) => {
+    adminEmojis: (_, { categoryId, limit, offset, search }, { admin }) => {
       requireAdmin(admin);
-      return adminService.listEmojis(categoryId);
+      return adminService.listEmojis(categoryId, { limit, offset, search });
     },
 
-    // ── Theme Color Categories ────────────────────────────────────────────────
     adminThemeColorCategories: (_, __, { admin }) => {
       requireAdmin(admin);
       return adminService.listThemeColorCategories();
     },
-
-    adminThemeColors: (_, { categoryId }, { admin }) => {
+    adminThemeColors: (_, { categoryId, limit, offset, search }, { admin }) => {
       requireAdmin(admin);
-      return adminService.listThemeColors(categoryId);
+      return adminService.listThemeColors(categoryId, {
+        limit,
+        offset,
+        search,
+      });
     },
 
-    // ── Wallpaper Categories ──────────────────────────────────────────────────
     adminWallpaperCategories: (_, __, { admin }) => {
       requireAdmin(admin);
       return adminService.listWallpaperCategories();
     },
-
-    adminWallpapers: (_, { categoryId }, { admin }) => {
+    adminWallpapers: (_, { categoryId, limit, offset, search }, { admin }) => {
       requireAdmin(admin);
-      return adminService.listWallpapers(categoryId);
+      return adminService.listWallpapers(categoryId, { limit, offset, search });
     },
 
-    // ── Feedback ──────────────────────────────────────────────────────────────
     adminFeedback: (_, { limit, offset }, { admin }) => {
       requireAdmin(admin);
       return adminService.listFeedback({ limit, offset });
     },
-
-    // ── Contact Us ────────────────────────────────────────────────────────────
     adminContactUs: (_, { limit, offset }, { admin }) => {
       requireAdmin(admin);
       return adminService.listContactUs({ limit, offset });
     },
 
-    // ── CMS Pages ─────────────────────────────────────────────────────────────
     adminPrivacyPolicy: (_, __, { admin }) => {
       requireAdmin(admin);
       return adminService.getPage("privacy-policy");
     },
-
     adminTermsConditions: (_, __, { admin }) => {
       requireAdmin(admin);
       return adminService.getPage("terms-conditions");
     },
 
-    // ── FAQ ───────────────────────────────────────────────────────────────────
     adminFaqs: (_, { includeInactive }, { admin }) => {
       requireAdmin(admin);
       return adminService.listFaqs(includeInactive ?? true);
     },
-
     adminFaq: (_, { id }, { admin }) => {
       requireAdmin(admin);
       return adminService.getFaq(id);
     },
 
-    // ── User Queries (require user JWT) ───────────────────────────────────────
-
+    // ── User-facing content queries ───────────────────────────────────────────
     userEmojiCategories: (_, __, { user }) => {
       requireAuth(user);
       return contentService.listEmojiCategories();
     },
-
     userEmojis: (_, { categoryId }, { user }) => {
       requireAuth(user);
       return contentService.listEmojis(categoryId);
     },
-
     userThemeColorCategories: (_, __, { user }) => {
       requireAuth(user);
       return contentService.listThemeColorCategories();
     },
-
     userThemeColors: (_, { categoryId }, { user }) => {
       requireAuth(user);
       return contentService.listThemeColors(categoryId);
     },
-
     userWallpaperCategories: (_, __, { user }) => {
       requireAuth(user);
       return contentService.listWallpaperCategories();
     },
-
     userWallpapers: (_, { categoryId }, { user }) => {
       requireAuth(user);
       return contentService.listWallpapers(categoryId);
     },
-
     userPrivacyPolicy: (_, __, { user }) => {
       requireAuth(user);
       return contentService.getPage("privacy-policy");
     },
-
     userTermsConditions: (_, __, { user }) => {
       requireAuth(user);
       return contentService.getPage("terms-conditions");
     },
-
     userFaqs: (_, __, { user }) => {
       requireAuth(user);
       return contentService.listFaqs();
@@ -381,6 +372,14 @@ export const resolvers = {
       requireAuth(user);
       return usersService.addContact(user.id, contactId, nickname);
     },
+    updateNickname: (_, { contactId, nickname }, { user }) => {
+      requireAuth(user);
+      return usersService.updateNickname(user.id, contactId, nickname);
+    },
+    reportUser: (_, { userId, reason }, { user }) => {
+      requireAuth(user);
+      return usersService.reportUser(user.id, userId, reason);
+    },
 
     // ── Conversations ─────────────────────────────────────────────────────────
     findOrCreateDirectConversation: (_, { targetUserId }, { user }) => {
@@ -408,6 +407,51 @@ export const resolvers = {
     markConversationRead: (_, { conversationId }, { user }) => {
       requireAuth(user);
       return conversationsService.markAsRead(conversationId, user.id);
+    },
+    muteConversation: (_, { conversationId, mute }, { user }) => {
+      requireAuth(user);
+      return conversationsService.muteConversation(
+        conversationId,
+        user.id,
+        mute,
+      );
+    },
+    pinConversation: (_, { conversationId, pin }, { user }) => {
+      requireAuth(user);
+      return conversationsService.pinConversation(conversationId, user.id, pin);
+    },
+    favouriteConversation: (_, { conversationId, favourite }, { user }) => {
+      requireAuth(user);
+      return conversationsService.favouriteConversation(
+        conversationId,
+        user.id,
+        favourite,
+      );
+    },
+    clearChat: (_, { conversationId }, { user }) => {
+      requireAuth(user);
+      return conversationsService.clearChat(conversationId, user.id);
+    },
+    deleteConversation: (_, { conversationId }, { user }) => {
+      requireAuth(user);
+      return conversationsService.deleteConversation(conversationId, user.id);
+    },
+    setDisappearingMessages: (_, { conversationId, duration }, { user }) => {
+      requireAuth(user);
+      return conversationsService.setDisappearingMessages(
+        conversationId,
+        user.id,
+        duration,
+      );
+    },
+
+    searchMessages: (_, { conversationId, query }, { user }) => {
+      requireAuth(user);
+      return conversationsService.searchMessages(
+        conversationId,
+        user.id,
+        query,
+      );
     },
 
     // ── Messages ──────────────────────────────────────────────────────────────
@@ -544,8 +588,9 @@ export const resolvers = {
     removeDevice: async (_, { deviceId }, { user }) => {
       requireAuth(user);
       const device = await removeDevice(deviceId);
-      if (device?.socket_id) {
-        chatGateway.io?.to(device.socket_id).emit("force-logout");
+      // Force-logout via in-memory socket registry (no socket_id in DB)
+      if (device?.user_id) {
+        chatGateway.forceLogoutUser(device.user_id);
       }
       return true;
     },
@@ -554,10 +599,8 @@ export const resolvers = {
     // ADMIN MUTATIONS
     // ══════════════════════════════════════════════════════════════════════════
 
-    // ── Admin Auth ─────────────────────────────────────────────────────────────
     adminRegister: (_, { username, email, password }) =>
       adminService.register(username, email, password),
-
     adminLogin: (_, { identifier, password }) =>
       adminService.login(identifier, password),
 
@@ -565,13 +608,11 @@ export const resolvers = {
       requireAdmin(admin);
       return adminService.updateProfile(admin.id, args);
     },
-
     adminChangePassword: (_, { oldPassword, newPassword }, { admin }) => {
       requireAdmin(admin);
       return adminService.changePassword(admin.id, oldPassword, newPassword);
     },
 
-    // ── User Management ───────────────────────────────────────────────────────
     adminSetUserStatus: (_, { userId, status }, { admin }) => {
       requireAdmin(admin);
       return adminService.setUserStatus(userId, status);
@@ -582,7 +623,6 @@ export const resolvers = {
       requireAdmin(admin);
       return adminService.createEmojiCategory(input.categoryName, input.status);
     },
-
     adminUpdateEmojiCategory: (_, { id, input }, { admin }) => {
       requireAdmin(admin);
       const fields = {};
@@ -591,7 +631,6 @@ export const resolvers = {
       if (input.status !== undefined) fields.status = input.status;
       return adminService.updateEmojiCategory(id, fields);
     },
-
     adminDeleteEmojiCategory: (_, { id }, { admin }) => {
       requireAdmin(admin);
       return adminService.deleteEmojiCategory(id);
@@ -606,7 +645,6 @@ export const resolvers = {
         input.status,
       );
     },
-
     adminUpdateEmoji: (_, { id, input }, { admin }) => {
       requireAdmin(admin);
       const fields = {};
@@ -615,7 +653,6 @@ export const resolvers = {
       if (input.status !== undefined) fields.status = input.status;
       return adminService.updateEmoji(id, fields);
     },
-
     adminDeleteEmoji: (_, { id }, { admin }) => {
       requireAdmin(admin);
       return adminService.deleteEmoji(id);
@@ -629,7 +666,6 @@ export const resolvers = {
         input.status,
       );
     },
-
     adminUpdateThemeColorCategory: (_, { id, input }, { admin }) => {
       requireAdmin(admin);
       const fields = {};
@@ -638,7 +674,6 @@ export const resolvers = {
       if (input.status !== undefined) fields.status = input.status;
       return adminService.updateThemeColorCategory(id, fields);
     },
-
     adminDeleteThemeColorCategory: (_, { id }, { admin }) => {
       requireAdmin(admin);
       return adminService.deleteThemeColorCategory(id);
@@ -654,7 +689,6 @@ export const resolvers = {
         input.status,
       );
     },
-
     adminUpdateThemeColor: (_, { id, input }, { admin }) => {
       requireAdmin(admin);
       const fields = {};
@@ -664,7 +698,6 @@ export const resolvers = {
       if (input.status !== undefined) fields.status = input.status;
       return adminService.updateThemeColor(id, fields);
     },
-
     adminDeleteThemeColor: (_, { id }, { admin }) => {
       requireAdmin(admin);
       return adminService.deleteThemeColor(id);
@@ -678,7 +711,6 @@ export const resolvers = {
         input.status,
       );
     },
-
     adminUpdateWallpaperCategory: (_, { id, input }, { admin }) => {
       requireAdmin(admin);
       const fields = {};
@@ -687,7 +719,6 @@ export const resolvers = {
       if (input.status !== undefined) fields.status = input.status;
       return adminService.updateWallpaperCategory(id, fields);
     },
-
     adminDeleteWallpaperCategory: (_, { id }, { admin }) => {
       requireAdmin(admin);
       return adminService.deleteWallpaperCategory(id);
@@ -703,7 +734,6 @@ export const resolvers = {
         input.status,
       );
     },
-
     adminUpdateWallpaper: (_, { id, input }, { admin }) => {
       requireAdmin(admin);
       const fields = {};
@@ -713,7 +743,6 @@ export const resolvers = {
       if (input.status !== undefined) fields.status = input.status;
       return adminService.updateWallpaper(id, fields);
     },
-
     adminDeleteWallpaper: (_, { id }, { admin }) => {
       requireAdmin(admin);
       return adminService.deleteWallpaper(id);
@@ -730,7 +759,6 @@ export const resolvers = {
       requireAdmin(admin);
       return adminService.upsertPage("privacy-policy", title, content);
     },
-
     adminUpsertTermsConditions: (_, { title, content }, { admin }) => {
       requireAdmin(admin);
       return adminService.upsertPage("terms-conditions", title, content);
@@ -746,7 +774,6 @@ export const resolvers = {
         input.status,
       );
     },
-
     adminUpdateFaq: (_, { id, input }, { admin }) => {
       requireAdmin(admin);
       const fields = {};
@@ -756,7 +783,6 @@ export const resolvers = {
       if (input.status !== undefined) fields.status = input.status;
       return adminService.updateFaq(id, fields);
     },
-
     adminDeleteFaq: (_, { id }, { admin }) => {
       requireAdmin(admin);
       return adminService.deleteFaq(id);

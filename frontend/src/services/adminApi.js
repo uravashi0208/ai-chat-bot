@@ -2,20 +2,18 @@
  * @file src/services/adminApi.js
  * @description Admin GraphQL API client — mirrors the BE admin schema 1:1.
  *
- * Auth:
- *   Admin token is stored in localStorage under "admin_token".
- *   On UNAUTHENTICATED the user is redirected to /login automatically.
- *
- * Pattern:
- *   Every exported object corresponds to a domain (auth, users, emoji …).
- *   All methods return Promises that resolve to the unwrapped data field.
+ * ALL listing APIs use server-side limit/offset pagination.
+ * Default page size: ADMIN_PAGE_SIZE (10). Callers can override.
  */
 
 const GQL_ENDPOINT =
   process.env.REACT_APP_GQL_URL || "http://localhost:4000/graphql";
 
-const TOKEN_KEY = "admin_token";
-const USER_KEY = "admin_user";
+export const TOKEN_KEY = "admin_token";
+export const USER_KEY = "admin_user";
+
+/** Default rows-per-page used by every admin list query. */
+export const ADMIN_PAGE_SIZE = 10;
 
 // ─── Core transport ──────────────────────────────────────────────────────────
 
@@ -45,7 +43,7 @@ async function gql(query, variables = {}) {
   return json.data;
 }
 
-// ─── Fragment helpers ────────────────────────────────────────────────────────
+// ─── GQL fragment constants ───────────────────────────────────────────────────
 
 const ADMIN_FIELDS = `id username full_name email phone avatar_url about created_at`;
 
@@ -84,7 +82,12 @@ const CMS_FIELDS = `id slug title content updated_at`;
 
 const FAQ_FIELDS = `id question answer sort_order status created_at updated_at`;
 
-// ─── Admin Auth ──────────────────────────────────────────────────────────────
+const ADMIN_FULL_FIELDS = `
+  id username email full_name phone avatar_url about
+  facebook instagram linkedin twitter created_at
+`;
+
+// ─── Admin Auth ───────────────────────────────────────────────────────────────
 
 export const adminAuthApi = {
   login: (identifier, password) =>
@@ -110,10 +113,16 @@ export const adminAuthApi = {
     ).then((d) => d.adminRegister),
 };
 
-// ─── Users ───────────────────────────────────────────────────────────────────
+// ─── Users (server-paginated) ─────────────────────────────────────────────────
 
 export const adminUsersApi = {
-  getAll: (limit = 20, offset = 0, search = "") =>
+  /**
+   * @param {number} limit   rows per page
+   * @param {number} offset  row offset = page * limit
+   * @param {string} search  optional search string (server-side)
+   * @returns {Promise<{ users: object[], total: number }>}
+   */
+  getAll: (limit = ADMIN_PAGE_SIZE, offset = 0, search = "") =>
     gql(
       `query AdminUsers($limit: Int, $offset: Int, $search: String) {
         adminUsers(limit: $limit, offset: $offset, search: $search) {
@@ -133,7 +142,7 @@ export const adminUsersApi = {
     ).then((d) => d.adminSetUserStatus),
 };
 
-// ─── Emoji Categories ────────────────────────────────────────────────────────
+// ─── Emoji Categories (non-paginated — categories are small look-up sets) ─────
 
 export const adminEmojiCatApi = {
   getAll: () =>
@@ -159,22 +168,34 @@ export const adminEmojiCatApi = {
 
   delete: (id) =>
     gql(
-      `mutation AdminDeleteEmojiCategory($id: ID!) {
-        adminDeleteEmojiCategory(id: $id)
-      }`,
+      `mutation AdminDeleteEmojiCategory($id: ID!) { adminDeleteEmojiCategory(id: $id) }`,
       { id },
     ).then((d) => d.adminDeleteEmojiCategory),
 };
 
-// ─── Emojis ──────────────────────────────────────────────────────────────────
+// ─── Emojis (server-paginated) ────────────────────────────────────────────────
 
 export const adminEmojiApi = {
-  getAll: (categoryId) =>
+  /**
+   * @param {{ categoryId?, limit?, offset?, search? }} params
+   * @returns {Promise<{ items: object[], total: number }>}
+   */
+  getAll: ({ categoryId, limit = ADMIN_PAGE_SIZE, offset = 0, search } = {}) =>
     gql(
-      `query AdminEmojis($categoryId: ID) {
-        adminEmojis(categoryId: $categoryId) { ${EMOJI_FIELDS} }
+      `query AdminEmojis($categoryId: ID, $limit: Int, $offset: Int, $search: String) {
+        adminEmojis(categoryId: $categoryId, limit: $limit, offset: $offset, search: $search) {
+          total
+          totalActive
+          totalInactive
+          items { ${EMOJI_FIELDS} }
+        }
       }`,
-      { categoryId: categoryId || undefined },
+      {
+        categoryId: categoryId || undefined,
+        limit,
+        offset,
+        search: search || undefined,
+      },
     ).then((d) => d.adminEmojis),
 
   create: (input) =>
@@ -199,7 +220,7 @@ export const adminEmojiApi = {
     }).then((d) => d.adminDeleteEmoji),
 };
 
-// ─── Theme Color Categories ──────────────────────────────────────────────────
+// ─── Theme Color Categories (non-paginated) ───────────────────────────────────
 
 export const adminThemeCatApi = {
   getAll: () =>
@@ -225,22 +246,34 @@ export const adminThemeCatApi = {
 
   delete: (id) =>
     gql(
-      `mutation AdminDeleteThemeColorCategory($id: ID!) {
-        adminDeleteThemeColorCategory(id: $id)
-      }`,
+      `mutation AdminDeleteThemeColorCategory($id: ID!) { adminDeleteThemeColorCategory(id: $id) }`,
       { id },
     ).then((d) => d.adminDeleteThemeColorCategory),
 };
 
-// ─── Theme Colors ────────────────────────────────────────────────────────────
+// ─── Theme Colors (server-paginated) ─────────────────────────────────────────
 
 export const adminThemeColorApi = {
-  getAll: (categoryId) =>
+  /**
+   * @param {{ categoryId?, limit?, offset?, search? }} params
+   * @returns {Promise<{ items: object[], total: number }>}
+   */
+  getAll: ({ categoryId, limit = ADMIN_PAGE_SIZE, offset = 0, search } = {}) =>
     gql(
-      `query AdminThemeColors($categoryId: ID) {
-        adminThemeColors(categoryId: $categoryId) { ${THEME_COLOR_FIELDS} }
+      `query AdminThemeColors($categoryId: ID, $limit: Int, $offset: Int, $search: String) {
+        adminThemeColors(categoryId: $categoryId, limit: $limit, offset: $offset, search: $search) {
+          total
+          totalActive
+          totalInactive
+          items { ${THEME_COLOR_FIELDS} }
+        }
       }`,
-      { categoryId: categoryId || undefined },
+      {
+        categoryId: categoryId || undefined,
+        limit,
+        offset,
+        search: search || undefined,
+      },
     ).then((d) => d.adminThemeColors),
 
   create: (input) =>
@@ -266,7 +299,7 @@ export const adminThemeColorApi = {
     ).then((d) => d.adminDeleteThemeColor),
 };
 
-// ─── Wallpaper Categories ────────────────────────────────────────────────────
+// ─── Wallpaper Categories (non-paginated) ─────────────────────────────────────
 
 export const adminWallpaperCatApi = {
   getAll: () =>
@@ -292,22 +325,34 @@ export const adminWallpaperCatApi = {
 
   delete: (id) =>
     gql(
-      `mutation AdminDeleteWallpaperCategory($id: ID!) {
-        adminDeleteWallpaperCategory(id: $id)
-      }`,
+      `mutation AdminDeleteWallpaperCategory($id: ID!) { adminDeleteWallpaperCategory(id: $id) }`,
       { id },
     ).then((d) => d.adminDeleteWallpaperCategory),
 };
 
-// ─── Wallpapers ──────────────────────────────────────────────────────────────
+// ─── Wallpapers (server-paginated) ────────────────────────────────────────────
 
 export const adminWallpaperApi = {
-  getAll: (categoryId) =>
+  /**
+   * @param {{ categoryId?, limit?, offset?, search? }} params
+   * @returns {Promise<{ items: object[], total: number }>}
+   */
+  getAll: ({ categoryId, limit = ADMIN_PAGE_SIZE, offset = 0, search } = {}) =>
     gql(
-      `query AdminWallpapers($categoryId: ID) {
-        adminWallpapers(categoryId: $categoryId) { ${WALLPAPER_FIELDS} }
+      `query AdminWallpapers($categoryId: ID, $limit: Int, $offset: Int, $search: String) {
+        adminWallpapers(categoryId: $categoryId, limit: $limit, offset: $offset, search: $search) {
+          total
+          totalActive
+          totalInactive
+          items { ${WALLPAPER_FIELDS} }
+        }
       }`,
-      { categoryId: categoryId || undefined },
+      {
+        categoryId: categoryId || undefined,
+        limit,
+        offset,
+        search: search || undefined,
+      },
     ).then((d) => d.adminWallpapers),
 
   create: (input) =>
@@ -333,10 +378,10 @@ export const adminWallpaperApi = {
     ).then((d) => d.adminDeleteWallpaper),
 };
 
-// ─── Feedback ────────────────────────────────────────────────────────────────
+// ─── Feedback (server-paginated) ──────────────────────────────────────────────
 
 export const adminFeedbackApi = {
-  getAll: (limit = 20, offset = 0) =>
+  getAll: (limit = ADMIN_PAGE_SIZE, offset = 0) =>
     gql(
       `query AdminFeedback($limit: Int, $offset: Int) {
         adminFeedback(limit: $limit, offset: $offset) {
@@ -348,10 +393,10 @@ export const adminFeedbackApi = {
     ).then((d) => d.adminFeedback),
 };
 
-// ─── Contact Us ──────────────────────────────────────────────────────────────
+// ─── Contact Us (server-paginated) ────────────────────────────────────────────
 
 export const adminContactUsApi = {
-  getAll: (limit = 20, offset = 0) =>
+  getAll: (limit = ADMIN_PAGE_SIZE, offset = 0) =>
     gql(
       `query AdminContactUs($limit: Int, $offset: Int) {
         adminContactUs(limit: $limit, offset: $offset) {
@@ -371,7 +416,7 @@ export const adminContactUsApi = {
     ).then((d) => d.adminMarkContactUsRead),
 };
 
-// ─── CMS Pages ───────────────────────────────────────────────────────────────
+// ─── CMS Pages ────────────────────────────────────────────────────────────────
 
 export const adminCmsApi = {
   getPrivacyPolicy: () =>
@@ -401,7 +446,7 @@ export const adminCmsApi = {
     ).then((d) => d.adminUpsertTermsConditions),
 };
 
-// ─── FAQs ────────────────────────────────────────────────────────────────────
+// ─── FAQs ─────────────────────────────────────────────────────────────────────
 
 export const adminFaqApi = {
   getAll: (includeInactive = true) =>
@@ -439,43 +484,21 @@ export const adminFaqApi = {
     }).then((d) => d.adminDeleteFaq),
 };
 
-// ─── Admin Profile ───────────────────────────────────────────────────────────
-
-const ADMIN_FULL_FIELDS = `
-  id username email full_name phone avatar_url about
-  facebook instagram linkedin twitter created_at
-`;
+// ─── Admin Profile ────────────────────────────────────────────────────────────
 
 export const adminProfileApi = {
-  /** Fetch full admin profile (requires admin JWT). */
   getMe: () =>
     gql(`query { adminMe { ${ADMIN_FULL_FIELDS} } }`).then((d) => d.adminMe),
 
-  /**
-   * Update profile fields (excludes email/password).
-   * @param {{ fullName, phone, about, avatarUrl, facebook, instagram, linkedin, twitter }} fields
-   */
   updateProfile: (fields) =>
     gql(
       `mutation AdminUpdateProfile(
-        $fullName: String
-        $phone: String
-        $about: String
-        $avatarUrl: String
-        $facebook: String
-        $instagram: String
-        $linkedin: String
-        $twitter: String
+        $fullName: String $phone: String $about: String $avatarUrl: String
+        $facebook: String $instagram: String $linkedin: String $twitter: String
       ) {
         adminUpdateProfile(
-          fullName: $fullName
-          phone: $phone
-          about: $about
-          avatarUrl: $avatarUrl
-          facebook: $facebook
-          instagram: $instagram
-          linkedin: $linkedin
-          twitter: $twitter
+          fullName: $fullName phone: $phone about: $about avatarUrl: $avatarUrl
+          facebook: $facebook instagram: $instagram linkedin: $linkedin twitter: $twitter
         ) { ${ADMIN_FULL_FIELDS} }
       }`,
       {
@@ -490,11 +513,6 @@ export const adminProfileApi = {
       },
     ).then((d) => d.adminUpdateProfile),
 
-  /**
-   * Change admin password.
-   * @param {string} oldPassword
-   * @param {string} newPassword
-   */
   changePassword: (oldPassword, newPassword) =>
     gql(
       `mutation AdminChangePassword($oldPassword: String!, $newPassword: String!) {
@@ -504,5 +522,4 @@ export const adminProfileApi = {
     ).then((d) => d.adminChangePassword),
 };
 
-export { TOKEN_KEY, USER_KEY };
 export default gql;

@@ -105,6 +105,9 @@ export const typeDefs = /* GraphQL */ `
     avatar_url: String
     is_archived: Boolean
     is_muted: Boolean
+    is_pinned: Boolean
+    is_favourite: Boolean
+    disappearing_messages: String
     last_message_at: String
     last_message_id: ID
     last_read_at: String
@@ -465,6 +468,27 @@ export const typeDefs = /* GraphQL */ `
     total: Int!
   }
 
+  type EmojiListPayload {
+    items: [Emoji!]!
+    total: Int!
+    totalActive: Int!
+    totalInactive: Int!
+  }
+
+  type ThemeColorListPayload {
+    items: [ThemeColor!]!
+    total: Int!
+    totalActive: Int!
+    totalInactive: Int!
+  }
+
+  type WallpaperListPayload {
+    items: [ChatWallpaper!]!
+    total: Int!
+    totalActive: Int!
+    totalInactive: Int!
+  }
+
   # ─── CONTACT US ──────────────────────────────────────────────────────────────
 
   type ContactUs {
@@ -529,6 +553,7 @@ export const typeDefs = /* GraphQL */ `
     # Users
     user(id: ID!): User
     searchUsers(query: String!): [User!]!
+    searchMessages(conversationId: ID!, query: String!): [Message!]!
     contacts: [Contact!]!
 
     # Conversations
@@ -566,13 +591,28 @@ export const typeDefs = /* GraphQL */ `
     adminUsers(limit: Int, offset: Int, search: String): AdminUserListPayload!
 
     adminEmojiCategories: [EmojiCategory!]!
-    adminEmojis(categoryId: ID): [Emoji!]!
+    adminEmojis(
+      categoryId: ID
+      limit: Int
+      offset: Int
+      search: String
+    ): EmojiListPayload!
 
     adminThemeColorCategories: [ThemeColorCategory!]!
-    adminThemeColors(categoryId: ID): [ThemeColor!]!
+    adminThemeColors(
+      categoryId: ID
+      limit: Int
+      offset: Int
+      search: String
+    ): ThemeColorListPayload!
 
     adminWallpaperCategories: [WallpaperCategory!]!
-    adminWallpapers(categoryId: ID): [ChatWallpaper!]!
+    adminWallpapers(
+      categoryId: ID
+      limit: Int
+      offset: Int
+      search: String
+    ): WallpaperListPayload!
 
     adminFeedback(limit: Int, offset: Int): FeedbackListPayload!
     adminContactUs(limit: Int, offset: Int): ContactUsListPayload!
@@ -637,6 +677,7 @@ export const typeDefs = /* GraphQL */ `
     changeTwoStepPin(currentPin: String!, newPin: String!): Boolean!
     deleteAccount(password: String!): Boolean!
     addContact(contactId: ID!, nickname: String): Contact!
+    updateNickname(contactId: ID!, nickname: String): Contact!
 
     # Conversations
     findOrCreateDirectConversation(targetUserId: ID!): Conversation!
@@ -646,6 +687,14 @@ export const typeDefs = /* GraphQL */ `
       description: String
     ): Conversation!
     markConversationRead(conversationId: ID!): Boolean!
+    muteConversation(conversationId: ID!, mute: Boolean!): Boolean!
+    pinConversation(conversationId: ID!, pin: Boolean!): Boolean!
+    favouriteConversation(conversationId: ID!, favourite: Boolean!): Boolean!
+    clearChat(conversationId: ID!): Boolean!
+    deleteConversation(conversationId: ID!): Boolean!
+    setDisappearingMessages(conversationId: ID!, duration: String!): Boolean!
+    searchMessages(conversationId: ID!, query: String!): [Message!]!
+    reportUser(userId: ID!, reason: String!): Boolean!
 
     # Messages
     sendMessage(

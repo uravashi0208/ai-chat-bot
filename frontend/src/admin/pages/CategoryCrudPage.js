@@ -33,6 +33,7 @@ import {
   STATUS_TABS,
 } from "../components/common";
 import { useAdminTable } from "../../hooks/useAdminTable";
+import { useToast } from "../context/ToastContext";
 
 const STATUS_OPTIONS = [
   { value: 1, label: "Active" },
@@ -71,6 +72,8 @@ export default function CategoryCrudPage({
     defaultPageSize: 10,
   });
 
+  const toast = useToast();
+
   const [dialog, setDialog] = useState({
     open: false,
     mode: "create",
@@ -107,20 +110,25 @@ export default function CategoryCrudPage({
     try {
       if (dialog.mode === "create") {
         const created = await api.create({
-          category_name: formName.trim(),
+          categoryName: formName.trim(),
           status: formStatus,
         });
         prependRow(created);
+        toast.success(
+          `${title.replace(" Categories", "")} created successfully!`,
+        );
       } else {
         const updated = await api.update(dialog.row.id, {
-          category_name: formName.trim(),
+          categoryName: formName.trim(),
           status: formStatus,
         });
         replaceRow(updated.id, updated);
+        toast.success("Category updated successfully!");
       }
       closeDialog();
     } catch (e) {
       setFormErr(e.message || "Save failed.");
+      toast.error(e.message || "Failed to save category.");
     }
     setSaving(false);
   };
@@ -131,7 +139,10 @@ export default function CategoryCrudPage({
     try {
       await api.delete(deleteTarget.id);
       removeRow(deleteTarget.id);
-    } catch (_) {}
+      toast.success("Category deleted.");
+    } catch (_) {
+      toast.error("Failed to delete category.");
+    }
     setDeleteLoading(false);
     setDeleteTarget(null);
   };

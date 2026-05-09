@@ -603,7 +603,7 @@ function AccountPopover({ admin, onLogout }) {
               fontWeight={700}
               sx={{ color: "#111827" }}
             >
-              {admin?.username || "Admin"}
+              {admin?.full_name || "Admin"}
             </Typography>
             <Typography variant="caption" sx={{ color: "#9ca3af" }}>
               {admin?.email || ""}

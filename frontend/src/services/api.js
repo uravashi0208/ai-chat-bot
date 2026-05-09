@@ -73,7 +73,7 @@ const LAST_MSG_FIELDS = `
 const CONVERSATION_FIELDS = `
   id type name avatar_url description
   last_message_at created_at last_message_id
-  last_read_at is_muted is_archived unread_count
+  last_read_at is_muted is_archived is_pinned is_favourite disappearing_messages unread_count
   last_message { ${LAST_MSG_FIELDS} }
   participants { ${PARTICIPANT_FIELDS} }
 `;
@@ -209,6 +209,23 @@ export const usersApi = {
       { contactId, nickname },
     ).then((d) => d.addContact),
 
+  /** Updates the nickname for an existing contact. */
+  updateNickname: (contactId, nickname) =>
+    gql(
+      `mutation UpdateNickname($contactId: ID!, $nickname: String) {
+        updateNickname(contactId: $contactId, nickname: $nickname) { ${CONTACT_FIELDS} }
+      }`,
+      { contactId, nickname },
+    ).then((d) => d.updateNickname),
+
+  reportUser: (userId, reason) =>
+    gql(
+      `mutation ReportUser($userId: ID!, $reason: String!) {
+        reportUser(userId: $userId, reason: $reason)
+      }`,
+      { userId, reason },
+    ).then((d) => d.reportUser),
+
   /** Fetches a single user by their ID. */
   getById: (id) =>
     gql(
@@ -314,6 +331,65 @@ export const conversationsApi = {
       }`,
       { conversationId },
     ).then((d) => d.markConversationRead),
+
+  muteConversation: (conversationId, mute) =>
+    gql(
+      `mutation MuteConv($conversationId: ID!, $mute: Boolean!) {
+        muteConversation(conversationId: $conversationId, mute: $mute)
+      }`,
+      { conversationId, mute },
+    ).then((d) => d.muteConversation),
+
+  pinConversation: (conversationId, pin) =>
+    gql(
+      `mutation PinConv($conversationId: ID!, $pin: Boolean!) {
+        pinConversation(conversationId: $conversationId, pin: $pin)
+      }`,
+      { conversationId, pin },
+    ).then((d) => d.pinConversation),
+
+  favouriteConversation: (conversationId, favourite) =>
+    gql(
+      `mutation FavConv($conversationId: ID!, $favourite: Boolean!) {
+        favouriteConversation(conversationId: $conversationId, favourite: $favourite)
+      }`,
+      { conversationId, favourite },
+    ).then((d) => d.favouriteConversation),
+
+  clearChat: (conversationId) =>
+    gql(
+      `mutation ClearChat($conversationId: ID!) {
+        clearChat(conversationId: $conversationId)
+      }`,
+      { conversationId },
+    ).then((d) => d.clearChat),
+
+  deleteConversation: (conversationId) =>
+    gql(
+      `mutation DeleteConv($conversationId: ID!) {
+        deleteConversation(conversationId: $conversationId)
+      }`,
+      { conversationId },
+    ).then((d) => d.deleteConversation),
+
+  setDisappearingMessages: (conversationId, duration) =>
+    gql(
+      `mutation SetDisappearing($conversationId: ID!, $duration: String!) {
+        setDisappearingMessages(conversationId: $conversationId, duration: $duration)
+      }`,
+      { conversationId, duration },
+    ).then((d) => d.setDisappearingMessages),
+
+  searchMessages: (conversationId, query) =>
+    gql(
+      `query SearchMsgs($conversationId: ID!, $query: String!) {
+        searchMessages(conversationId: $conversationId, query: $query) {
+          id content type media_url created_at is_deleted
+          sender { id username full_name avatar_url }
+        }
+      }`,
+      { conversationId, query },
+    ).then((d) => d.searchMessages),
 };
 
 // ─── Messages API ──────────────────────────────────────────────────────────

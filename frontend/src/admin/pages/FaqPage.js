@@ -40,6 +40,7 @@ import {
 } from "../components/common";
 import { adminFaqApi } from "../../services/adminApi";
 import { useAdminTable } from "../../hooks/useAdminTable";
+import { useToast } from "../context/ToastContext";
 
 export default function FaqPage() {
   const {
@@ -71,6 +72,8 @@ export default function FaqPage() {
     defaultPageSize: 10,
   });
 
+  const toast = useToast();
+
   const [view, setView] = useState("table");
   const [dialog, setDialog] = useState({
     open: false,
@@ -80,7 +83,7 @@ export default function FaqPage() {
   const [form, setForm] = useState({
     question: "",
     answer: "",
-    sort_order: 0,
+    sortOrder: 0,
     status: 1,
   });
   const [saving, setSaving] = useState(false);
@@ -92,7 +95,7 @@ export default function FaqPage() {
     setForm({
       question: "",
       answer: "",
-      sort_order: rows.length + 1,
+      sortOrder: total + 1,
       status: 1,
     });
     setFormErr("");
@@ -102,7 +105,7 @@ export default function FaqPage() {
     setForm({
       question: row.question || "",
       answer: row.answer || "",
-      sort_order: row.sort_order ?? 0,
+      sortOrder: row.sort_order ?? 0,
       status: row.status ?? 1,
     });
     setFormErr("");
@@ -124,19 +127,22 @@ export default function FaqPage() {
       const input = {
         question: form.question,
         answer: form.answer,
-        sort_order: Number(form.sort_order),
+        sortOrder: Number(form.sortOrder),
         status: form.status,
       };
       if (dialog.mode === "create") {
         const created = await adminFaqApi.create(input);
         prependRow(created);
+        toast.success("FAQ created successfully!");
       } else {
         const updated = await adminFaqApi.update(dialog.row.id, input);
         replaceRow(updated.id, updated);
+        toast.success("FAQ updated successfully!");
       }
       setDialog((d) => ({ ...d, open: false }));
     } catch (e) {
       setFormErr(e.message || "Save failed.");
+      toast.error(e.message || "Failed to save FAQ.");
     }
     setSaving(false);
   };
@@ -147,7 +153,10 @@ export default function FaqPage() {
     try {
       await adminFaqApi.delete(deleteTarget.id);
       removeRow(deleteTarget.id);
-    } catch (_) {}
+      toast.success("FAQ deleted.");
+    } catch (_) {
+      toast.error("Failed to delete FAQ.");
+    }
     setDeleteLoading(false);
     setDeleteTarget(null);
   };
@@ -473,9 +482,9 @@ export default function FaqPage() {
             <TextField
               label="Sort Order"
               type="number"
-              value={form.sort_order}
+              value={form.sortOrder}
               onChange={(e) =>
-                setForm((f) => ({ ...f, sort_order: e.target.value }))
+                setForm((f) => ({ ...f, sortOrder: e.target.value }))
               }
               size="small"
               sx={{

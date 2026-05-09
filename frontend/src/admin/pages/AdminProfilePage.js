@@ -121,18 +121,33 @@ function PasswordField({ label, value, onChange, error, helperText, focused }) {
 // ─── General Tab ─────────────────────────────────────────────────────────────
 function GeneralTab({ admin, updateAdmin }) {
   const [form, setForm] = useState({
-    fullName: admin?.full_name || "",
-    phone: admin?.phone || "",
-    about: admin?.about || "",
-    avatarUrl: admin?.avatar_url || "",
-    facebook: admin?.facebook || "",
-    instagram: admin?.instagram || "",
-    linkedin: admin?.linkedin || "",
-    twitter: admin?.twitter || "",
+    fullName: "",
+    phone: "",
+    about: "",
+    avatarUrl: "",
+    facebook: "",
+    instagram: "",
+    linkedin: "",
+    twitter: "",
   });
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState(null); // { type: 'success'|'error', text }
   const fileRef = useRef();
+
+  // Sync form whenever the admin data arrives (or changes)
+  useEffect(() => {
+    if (!admin) return;
+    setForm({
+      fullName: admin.full_name || "",
+      phone: admin.phone || "",
+      about: admin.about || "",
+      avatarUrl: admin.avatar_url || "",
+      facebook: admin.facebook || "",
+      instagram: admin.instagram || "",
+      linkedin: admin.linkedin || "",
+      twitter: admin.twitter || "",
+    });
+  }, [admin]);
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
@@ -605,7 +620,6 @@ export default function AdminProfilePage() {
       })
       .catch((err) => {
         if (!cancelled) {
-          // Fallback to cached admin from context
           setFullAdmin(admin);
           setError(err.message);
           setLoading(false);

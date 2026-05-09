@@ -1,152 +1,263 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
-
-const DEFAULT_PAGE_SIZE = 10;
-
 /**
- * @param {object}          opts
- * @param {function}        opts.dataFetcher    - (categoryId|undefined) => Promise<array>
- * @param {function}        opts.catFetcher     - () => Promise<array>
- * @param {string}          [opts.searchField]  - dot-notation field to search, e.g. "emoji" or "title"
- * @param {function}        [opts.searchFilter] - custom (row, query) => boolean  (overrides searchField)
- * @param {number}          [opts.pageSize]     - default rows per page
+ * useAdminTableWithCat.js
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Generic hook for admin pages that have:
+ *   - A server-paginated DATA list  (emoji, wallpaper, theme-color)
+ *   - A full CATEGORY look-up list  (always small — no pagination needed)
+ *
+ * React StrictMode-safe: uses a generation counter so StrictMode's
+ * double-mount does NOT fire two real API requests — the second invocation
+ * is silently discarded before any state update.
+ *
+ * Categories are fetched ONCE on mount (not on every data refetch).
+ *
+ * @param {object}   opts
+ * @param {function} opts.dataFetcher   ({ categoryId, limit, offset, search }) => Promise<{ items, total }>
+ * @param {function} opts.catFetcher    () => Promise<array>
+ * @param {number}   [opts.pageSize]    default rows per page (default ADMIN_PAGE_SIZE)
+ * @param {number}   [opts.debounceMs]  search debounce delay (default 400)
  */
+
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { ADMIN_PAGE_SIZE } from "../services/adminApi";
+
 export function useAdminTableWithCat({
   dataFetcher,
   catFetcher,
-  searchField,
-  searchFilter,
-  pageSize = DEFAULT_PAGE_SIZE,
+  pageSize = ADMIN_PAGE_SIZE,
+  debounceMs = 400,
 } = {}) {
-  // ── Raw data
-  const [_rows, setRows] = useState([]);
+  // ── Raw server data
+  const [_items, setItems] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [totalActive, setTotalActive] = useState(0);
+  const [totalInactive, setTotalInactive] = useState(0);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
   // ── Filter / pagination state
-  const [filterCat, setFilterCatState] = useState("");
-  const [search, setSearchState] = useState("");
-  const [statusTab, setStatusTabState] = useState("all");
-  const [page, setPageState] = useState(0);
-  const [rpp, setRppState] = useState(pageSize);
+  const [filterCat, _setFilterCat] = useState("");
+  const [search, _setSearch] = useState("");
+  const [statusTab, _setStatusTab] = useState("all");
+  const [page, _setPage] = useState(0);
+  const [rpp, _setRpp] = useState(pageSize);
 
-  // ── Fetch both APIs in parallel
+  // ── Debounced search (sent to API only after user stops typing)
+  const [_apiSearch, setApiSearch] = useState("");
+  const debounceRef = useRef(null);
+  const fetchGen = useRef(0); // generation counter — deduplicate concurrent fetches
+  const catFetchDone = useRef(false); // guard: fetch categories only once
+  const hasMounted = useRef(false); // guard: skip first debounce effect run
+
+  // ── Keep fetcher refs fresh without causing re-renders
+  const dataFetcherRef = useRef(dataFetcher);
+  const catFetcherRef = useRef(catFetcher);
+  useEffect(() => {
+    dataFetcherRef.current = dataFetcher;
+  });
+  useEffect(() => {
+    catFetcherRef.current = catFetcher;
+  });
+
+  // ── Fetch categories ONCE on mount
+  useEffect(() => {
+    if (catFetchDone.current || !catFetcherRef.current) return;
+    catFetchDone.current = true; // prevent StrictMode's second run from re-fetching
+    catFetcherRef
+      .current()
+      .then((res) => setCategories(Array.isArray(res) ? res : []))
+      .catch(() => {});
+  }, []); // empty deps = mount only
+
+  // ── Stable load function — always reads fresh state from refs
+  const filterCatRef = useRef(filterCat);
+  const rppRef = useRef(rpp);
+  const pageRef = useRef(page);
+  const apiSearchRef = useRef(_apiSearch);
+
+  useEffect(() => {
+    filterCatRef.current = filterCat;
+  });
+  useEffect(() => {
+    rppRef.current = rpp;
+  });
+  useEffect(() => {
+    pageRef.current = page;
+  });
+  useEffect(() => {
+    apiSearchRef.current = _apiSearch;
+  });
+
   const load = useCallback(async () => {
-    if (!dataFetcher || !catFetcher) return;
+    const fn = dataFetcherRef.current;
+    if (!fn) return;
+
+    fetchGen.current += 1;
+    const gen = fetchGen.current;
+
     setLoading(true);
     try {
-      const [dataResult, catResult] = await Promise.all([
-        dataFetcher(filterCat || undefined),
-        catFetcher(),
-      ]);
-      setRows(Array.isArray(dataResult) ? dataResult : []);
-      setCategories(Array.isArray(catResult) ? catResult : []);
-    } catch (_) {}
-    setLoading(false);
-  }, [dataFetcher, catFetcher, filterCat]);
+      const result = await fn({
+        categoryId: filterCatRef.current || undefined,
+        limit: rppRef.current,
+        offset: pageRef.current * rppRef.current,
+        search: apiSearchRef.current || undefined,
+      });
+
+      if (gen !== fetchGen.current) return; // stale — a newer fetch is in-flight
+
+      setItems(Array.isArray(result?.items) ? result.items : []);
+      setTotal(result?.total ?? 0);
+      setTotalActive(result?.totalActive ?? 0);
+      setTotalInactive(result?.totalInactive ?? 0);
+    } catch (_) {
+      if (gen !== fetchGen.current) return;
+      setItems([]);
+      setTotal(0);
+    } finally {
+      if (gen === fetchGen.current) setLoading(false);
+    }
+  }, []); // stable — no deps, reads from refs
+
+  // ── Trigger load on mount and whenever filters/pagination actually change
+  const prevFilterCat = useRef(filterCat);
+  const prevRpp = useRef(rpp);
+  const prevPage = useRef(page);
+  const prevApiSearch = useRef(_apiSearch);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    if (!hasMounted.current) {
+      hasMounted.current = true;
+      load(); // initial fetch
+      return;
+    }
+    // Only re-fetch if something that affects the API query changed
+    if (
+      prevFilterCat.current !== filterCat ||
+      prevRpp.current !== rpp ||
+      prevPage.current !== page ||
+      prevApiSearch.current !== _apiSearch
+    ) {
+      load();
+    }
+    prevFilterCat.current = filterCat;
+    prevRpp.current = rpp;
+    prevPage.current = page;
+    prevApiSearch.current = _apiSearch;
+  }, [filterCat, rpp, page, _apiSearch, load]);
 
-  // Reset page on filter changes
+  // ── Debounce search input (skip first mount to avoid double-call)
+  const isFirstDebounce = useRef(true);
   useEffect(() => {
-    setPageState(0);
-  }, [search, statusTab, filterCat]);
+    if (isFirstDebounce.current) {
+      isFirstDebounce.current = false;
+      return; // mount: initial load() already handles the first fetch
+    }
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setApiSearch(search);
+      _setPage(0);
+    }, debounceMs);
+    return () => clearTimeout(debounceRef.current);
+  }, [search, debounceMs]);
 
-  // ── Derived: tab counts
+  // ── Client-side status-tab filter (server doesn't filter by status)
+  // _items is only the current page — filter it for display
+  const filtered = useMemo(() => {
+    if (statusTab === "all") return _items;
+    if (statusTab === "active") return _items.filter((r) => r.status === 1);
+    if (statusTab === "inactive") return _items.filter((r) => r.status === 0);
+    return _items;
+  }, [_items, statusTab]);
+
+  // Counts come from server (accurate across ALL pages, not just the current page)
   const counts = useMemo(
     () => ({
-      all: _rows.length,
-      active: _rows.filter((r) => r.status === 1).length,
-      inactive: _rows.filter((r) => r.status === 0).length,
+      all: total,
+      active: totalActive,
+      inactive: totalInactive,
     }),
-    [_rows],
+    [total, totalActive, totalInactive],
   );
 
-  // ── Derived: filtered rows (status + search)
-  const filtered = useMemo(() => {
-    let arr = _rows;
-    if (statusTab === "active") arr = arr.filter((r) => r.status === 1);
-    if (statusTab === "inactive") arr = arr.filter((r) => r.status === 0);
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      if (searchFilter) {
-        arr = arr.filter((r) => searchFilter(r, search));
-      } else if (searchField) {
-        arr = arr.filter((r) =>
-          (r[searchField] || "").toLowerCase().includes(q),
-        );
-      }
-    }
-    return arr;
-  }, [_rows, statusTab, search, searchField, searchFilter]);
+  // Total for pagination: use server counts per tab
+  const displayTotal =
+    statusTab === "all"
+      ? total
+      : statusTab === "active"
+        ? totalActive
+        : totalInactive;
 
-  // ── Derived: paginated slice
-  const pagedRows = useMemo(
-    () => filtered.slice(page * rpp, page * rpp + rpp),
-    [filtered, page, rpp],
-  );
-
-  // ── Setters (with page-reset side-effects)
+  // ── Setters
   const setFilterCat = useCallback((v) => {
-    setFilterCatState(v);
-    setPageState(0);
+    _setFilterCat(v);
+    _setPage(0);
   }, []);
-
-  const setSearch = useCallback((v) => {
-    setSearchState(v);
-    setPageState(0);
-  }, []);
-
+  const setSearch = useCallback((v) => _setSearch(v), []);
   const setStatusTab = useCallback((v) => {
-    setStatusTabState(v);
-    setPageState(0);
+    _setStatusTab(v);
+    _setPage(0);
   }, []);
-
-  const setPage = useCallback((p) => setPageState(p), []);
-
+  const setPage = useCallback((p) => _setPage(p), []);
   const setRpp = useCallback((v) => {
-    setRppState(v);
-    setPageState(0);
+    _setRpp(v);
+    _setPage(0);
   }, []);
 
-  // ── Optimistic local mutations (avoids extra API round-trip after CRUD)
+  // ── Optimistic mutations
   const prependRow = useCallback((row) => {
-    setRows((prev) => [row, ...prev]);
+    setItems((p) => [row, ...p]);
+    setTotal((t) => t + 1);
+    if (row.status === 1) setTotalActive((t) => t + 1);
+    else setTotalInactive((t) => t + 1);
   }, []);
-
   const replaceRow = useCallback((id, row, key = "id") => {
-    setRows((prev) => prev.map((r) => (r[key] === id ? row : r)));
+    setItems((p) =>
+      p.map((r) => {
+        if (r[key] !== id) return r;
+        // If status changed, adjust counts
+        if (r.status !== row.status) {
+          if (row.status === 1) {
+            setTotalActive((t) => t + 1);
+            setTotalInactive((t) => Math.max(0, t - 1));
+          } else {
+            setTotalInactive((t) => t + 1);
+            setTotalActive((t) => Math.max(0, t - 1));
+          }
+        }
+        return row;
+      }),
+    );
   }, []);
-
   const removeRow = useCallback((id, key = "id") => {
-    setRows((prev) => prev.filter((r) => r[key] !== id));
+    setItems((p) => {
+      const removed = p.find((r) => r[key] === id);
+      if (removed) {
+        setTotal((t) => Math.max(0, t - 1));
+        if (removed.status === 1) setTotalActive((t) => Math.max(0, t - 1));
+        else setTotalInactive((t) => Math.max(0, t - 1));
+      }
+      return p.filter((r) => r[key] !== id);
+    });
   }, []);
 
   return {
-    // Data
-    rows: _rows, // all raw rows (pre-filter)
-    filtered, // after status + search filter
-    pagedRows, // current page slice
+    pagedRows: filtered,
+    filtered,
     categories,
     loading,
+    total: displayTotal, // pagination total = tab-aware server count
     counts,
-
-    // Filters
     filterCat,
     setFilterCat,
     search,
     setSearch,
     statusTab,
     setStatusTab,
-
-    // Pagination
     page,
     setPage,
     rpp,
     setRpp,
-
-    // Actions
     refresh: load,
     prependRow,
     replaceRow,

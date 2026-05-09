@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from "react";
 
 /**
  * useAsync — minimal data-fetching hook with loading / error / refetch.
@@ -8,9 +8,9 @@ import { useState, useEffect, useCallback } from 'react';
  * @param {boolean}  immediate - whether to fire immediately on mount (default true)
  */
 export function useAsync(fn, deps = [], immediate = true) {
-  const [data,    setData]    = useState(null);
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(immediate);
-  const [error,   setError]   = useState(null);
+  const [error, setError] = useState(null);
 
   const execute = useCallback(async (...args) => {
     setLoading(true);
@@ -20,7 +20,7 @@ export function useAsync(fn, deps = [], immediate = true) {
       setData(result);
       return result;
     } catch (e) {
-      setError(e.message || 'Something went wrong');
+      setError(e.message || "Something went wrong");
       throw e;
     } finally {
       setLoading(false);
@@ -38,12 +38,21 @@ export function useAsync(fn, deps = [], immediate = true) {
  * usePagination — page state helper.
  */
 export function usePagination(pageSize = 20) {
-  const [page, setPage]  = useState(0);
+  const [page, setPage] = useState(0);
   const [total, setTotal] = useState(0);
 
-  const offset      = page * pageSize;
-  const pageCount   = Math.ceil(total / pageSize);
-  const handlePage  = (_, p) => setPage(p - 1);
+  const offset = page * pageSize;
+  const pageCount = Math.ceil(total / pageSize);
+  const handlePage = (_, p) => setPage(p - 1);
 
-  return { page, offset, total, setTotal, pageCount, pageSize, handlePage, reset: () => setPage(0) };
+  return {
+    page,
+    offset,
+    total,
+    setTotal,
+    pageCount,
+    pageSize,
+    handlePage,
+    reset: () => setPage(0),
+  };
 }

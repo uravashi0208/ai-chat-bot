@@ -7,7 +7,7 @@ import React, {
   useRef,
 } from "react";
 import { getSocket } from "../services/socket";
-import { conversationsApi } from "../services/api";
+import { conversationsApi, privacyApi, usersApi } from "../services/api";
 import { useAuth } from "./AuthContext";
 
 const ChatContext = createContext(null);
@@ -19,6 +19,16 @@ export const ChatProvider = ({ children }) => {
   const [onlineUsers, setOnlineUsers] = useState(new Set());
   const [typingUsers, setTypingUsers] = useState({});
   const [loading, setLoading] = useState(false);
+  // Set of contact user IDs that the current user has blocked
+  const [blockedContactIds, setBlockedContactIds] = useState(new Set());
+  // Map of contactUserId → nickname (display name override)
+  const [contactsMap, setContactsMap] = useState({});
+  // Keep a ref so socket callbacks always see the latest blocked set
+  // without needing to be re-registered when the set changes.
+  const blockedContactIdsRef = useRef(new Set());
+  useEffect(() => {
+    blockedContactIdsRef.current = blockedContactIds;
+  }, [blockedContactIds]);
   const socketRef = useRef(null);
   // Track active conversation in a ref so socket callbacks can access latest value
   const activeConversationRef = useRef(null);
@@ -72,6 +82,36 @@ export const ChatProvider = ({ children }) => {
     if (user) loadConversations();
   }, [user, loadConversations]);
 
+  // Load blocked contacts list on mount
+  useEffect(() => {
+    if (!user) return;
+    privacyApi
+      .getBlockedContacts()
+      .then((list) => {
+        setBlockedContactIds(
+          new Set(list.map((b) => b.contact?.id).filter(Boolean)),
+        );
+      })
+      .catch(() => {});
+  }, [user]);
+
+  // Load contacts map (userId → nickname) on mount
+  useEffect(() => {
+    if (!user) return;
+    usersApi
+      .getContacts()
+      .then((list) => {
+        const map = {};
+        (list || []).forEach((c) => {
+          if (c.contact?.id && c.nickname) {
+            map[c.contact.id] = c.nickname;
+          }
+        });
+        setContactsMap(map);
+      })
+      .catch(() => {});
+  }, [user]);
+
   // Socket event listeners
   useEffect(() => {
     if (!user) return;
@@ -80,6 +120,18 @@ export const ChatProvider = ({ children }) => {
     socketRef.current = socket;
 
     const onNewMessage = ({ conversationId, message }) => {
+      // If the sender is someone we have blocked, silently drop the event.
+      // The backend already prevents the message being stored when the blocker
+      // is the *sender*, but we also guard here so that if User1 blocked User2,
+      // User1 never sees User2's messages appear in the sidebar list.
+      if (
+        message.sender_id &&
+        message.sender_id !== user?.id &&
+        blockedContactIdsRef.current?.has(message.sender_id)
+      ) {
+        return;
+      }
+
       setConversations((prev) =>
         prev
           .map((c) =>
@@ -205,6 +257,30 @@ export const ChatProvider = ({ children }) => {
     [onlineUsers],
   );
 
+  const blockUser = useCallback(async (contactId, reason) => {
+    await privacyApi.blockContact(contactId, reason);
+    setBlockedContactIds((prev) => new Set([...prev, contactId]));
+  }, []);
+
+  const unblockUser = useCallback(async (contactId) => {
+    await privacyApi.unblockContact(contactId);
+    setBlockedContactIds((prev) => {
+      const next = new Set(prev);
+      next.delete(contactId);
+      return next;
+    });
+  }, []);
+
+  const isUserBlocked = useCallback(
+    (userId) => blockedContactIds.has(userId),
+    [blockedContactIds],
+  );
+
+  // Update nickname in local map after edit (no reload needed)
+  const updateContactNickname = useCallback((contactUserId, nickname) => {
+    setContactsMap((prev) => ({ ...prev, [contactUserId]: nickname }));
+  }, []);
+
   return (
     <ChatContext.Provider
       value={{
@@ -218,6 +294,12 @@ export const ChatProvider = ({ children }) => {
         isUserOnline,
         getTypingUsersForConversation,
         onlineUsers,
+        blockedContactIds,
+        isUserBlocked,
+        blockUser,
+        unblockUser,
+        contactsMap,
+        updateContactNickname,
       }}
     >
       {children}

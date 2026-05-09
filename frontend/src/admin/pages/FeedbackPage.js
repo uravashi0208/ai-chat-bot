@@ -1,7 +1,9 @@
 /**
  * admin/pages/FeedbackPage.js
+ *
+ * Server-paginated feedback list.
  */
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import {
   Box,
   Stack,
@@ -13,48 +15,44 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
-import {
-  Feedback as FeedbackIcon,
-  Refresh as RefreshIcon,
-} from "@mui/icons-material";
+import { Feedback as FeedbackIcon } from "@mui/icons-material";
 import { format } from "date-fns";
 import {
   PageHeader,
   DataTable,
   UserAvatarCell,
   TableToolbar,
+  RefreshButton,
 } from "../components/common";
-import { adminFeedbackApi } from "../../services/adminApi";
-
-const PAGE_SIZE = 10;
+import { adminFeedbackApi, ADMIN_PAGE_SIZE } from "../../services/adminApi";
+import { useAdminTable } from "../../hooks/useAdminTable";
 
 export default function FeedbackPage() {
-  const [rows, setRows] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(0);
-  const [rpp, setRpp] = useState(PAGE_SIZE);
-  const [loading, setLoading] = useState(false);
+  const {
+    rows,
+    total,
+    loading,
+    page,
+    setPage,
+    rowsPerPage: rpp,
+    setRowsPerPage: setRpp,
+    refresh,
+  } = useAdminTable({
+    fetcher: useCallback(
+      (limit, offset) => adminFeedbackApi.getAll(limit, offset),
+      [],
+    ),
+    responseKey:  { rows: "items", total: "total" },
+    serverSearch: false,
+    statusField:  null,
+    defaultPageSize: ADMIN_PAGE_SIZE,
+  });
+
   const [detail, setDetail] = useState(null);
-
-  const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await adminFeedbackApi.getAll(rpp, page * rpp);
-      setRows(data.items || []);
-      setTotal(data.total || 0);
-    } catch (_) {}
-    setLoading(false);
-  }, [page, rpp]);
-
-  useEffect(() => {
-    load();
-  }, [load]);
 
   const columns = [
     {
-      id: "user",
-      label: "User",
-      minWidth: 200,
+      id: "user", label: "User", minWidth: 200,
       render: (r) => (
         <UserAvatarCell
           name={r.user?.full_name || r.user?.username}
@@ -64,37 +62,22 @@ export default function FeedbackPage() {
       ),
     },
     {
-      id: "rating",
-      label: "Rating",
-      minWidth: 140,
+      id: "rating", label: "Rating", minWidth: 140,
       render: (r) => (
         <Stack direction="row" alignItems="center" spacing={1}>
-          <Rating
-            value={r.rating}
-            readOnly
-            size="small"
+          <Rating value={r.rating} readOnly size="small"
             sx={{ "& .MuiRating-iconFilled": { color: "#f59e0b" } }}
           />
-          <Typography variant="caption" sx={{ color: "#6b7280" }}>
-            {r.rating}/5
-          </Typography>
+          <Typography variant="caption" sx={{ color: "#6b7280" }}>{r.rating}/5</Typography>
         </Stack>
       ),
     },
     {
-      id: "message",
-      label: "Message",
-      minWidth: 260,
+      id: "message", label: "Message", minWidth: 260,
       render: (r) => (
         <Typography
-          variant="body2"
-          color="text.secondary"
-          noWrap
-          sx={{
-            maxWidth: 260,
-            cursor: "pointer",
-            "&:hover": { color: "#6366f1" },
-          }}
+          variant="body2" color="text.secondary" noWrap
+          sx={{ maxWidth: 260, cursor: "pointer", "&:hover": { color: "#6366f1" } }}
           onClick={() => setDetail(r)}
         >
           {r.message || "—"}
@@ -102,30 +85,18 @@ export default function FeedbackPage() {
       ),
     },
     {
-      id: "created_at",
-      label: "Date",
-      minWidth: 140,
-      render: (r) =>
-        r.created_at
-          ? format(new Date(r.created_at), "dd MMM yyyy, HH:mm")
-          : "—",
+      id: "created_at", label: "Date", minWidth: 140,
+      render: (r) => r.created_at ? format(new Date(r.created_at), "dd MMM yyyy, HH:mm") : "—",
     },
     {
-      id: "actions",
-      label: "",
-      align: "right",
-      minWidth: 80,
+      id: "actions", label: "", align: "right", minWidth: 80,
       render: (row) => (
         <Button
-          size="small"
-          variant="outlined"
+          size="small" variant="outlined"
           onClick={() => setDetail(row)}
           sx={{
-            borderRadius: "7px",
-            borderColor: "#e5e7eb",
-            color: "#374151",
-            fontSize: "0.75rem",
-            textTransform: "none",
+            borderRadius: "7px", borderColor: "#e5e7eb", color: "#374151",
+            fontSize: "0.75rem", textTransform: "none",
             "&:hover": { borderColor: "#6366f1", color: "#6366f1" },
           }}
         >
@@ -145,26 +116,7 @@ export default function FeedbackPage() {
           { label: "Dashboard", href: "/admin/dashboard" },
           { label: "Feedback" },
         ]}
-        actions={
-          <Button
-            variant="outlined"
-            size="small"
-            startIcon={<RefreshIcon sx={{ fontSize: 15 }} />}
-            onClick={load}
-            disabled={loading}
-            sx={{
-              borderRadius: "8px",
-              borderColor: "#e5e7eb",
-              color: "#374151",
-              fontSize: "0.8125rem",
-              fontWeight: 600,
-              textTransform: "none",
-              "&:hover": { borderColor: "#d1d5db", bgcolor: "#f9fafb" },
-            }}
-          >
-            Refresh
-          </Button>
-        }
+        actions={<RefreshButton onClick={refresh} loading={loading} />}
       />
 
       <DataTable
@@ -175,10 +127,8 @@ export default function FeedbackPage() {
         page={page}
         rowsPerPage={rpp}
         onPageChange={setPage}
-        onRowsPerPageChange={(v) => {
-          setRpp(v);
-          setPage(0);
-        }}
+        onRowsPerPageChange={(v) => { setRpp(v); setPage(0); }}
+        rowsPerPageOptions={[10, 20, 50]}
         emptyMessage="No feedback submitted yet."
       />
 
@@ -186,13 +136,10 @@ export default function FeedbackPage() {
       <Dialog
         open={Boolean(detail)}
         onClose={() => setDetail(null)}
-        maxWidth="sm"
-        fullWidth
+        maxWidth="sm" fullWidth
         PaperProps={{ sx: { borderRadius: "14px" } }}
       >
-        <DialogTitle
-          sx={{ fontWeight: 700, fontSize: "1rem", color: "#111827" }}
-        >
+        <DialogTitle sx={{ fontWeight: 700, fontSize: "1rem", color: "#111827" }}>
           Feedback Detail
         </DialogTitle>
         <DialogContent>
@@ -205,27 +152,15 @@ export default function FeedbackPage() {
                 size={40}
               />
               <Stack direction="row" alignItems="center" spacing={1.5}>
-                <Rating
-                  value={detail.rating}
-                  readOnly
+                <Rating value={detail.rating} readOnly
                   sx={{ "& .MuiRating-iconFilled": { color: "#f59e0b" } }}
                 />
                 <Typography variant="body2" sx={{ color: "#6b7280" }}>
                   {detail.rating} / 5 stars
                 </Typography>
               </Stack>
-              <Box
-                sx={{
-                  p: 2,
-                  bgcolor: "#f9fafb",
-                  borderRadius: "10px",
-                  border: "1px solid #e9eaf0",
-                }}
-              >
-                <Typography
-                  variant="body2"
-                  sx={{ color: "#374151", lineHeight: 1.6 }}
-                >
+              <Box sx={{ p: 2, bgcolor: "#f9fafb", borderRadius: "10px", border: "1px solid #e9eaf0" }}>
+                <Typography variant="body2" sx={{ color: "#374151", lineHeight: 1.6 }}>
                   {detail.message || "No message."}
                 </Typography>
               </Box>
@@ -239,13 +174,8 @@ export default function FeedbackPage() {
           )}
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2.5 }}>
-          <Button
-            onClick={() => setDetail(null)}
-            sx={{
-              borderRadius: "8px",
-              textTransform: "none",
-              color: "#374151",
-            }}
+          <Button onClick={() => setDetail(null)}
+            sx={{ borderRadius: "8px", textTransform: "none", color: "#374151" }}
           >
             Close
           </Button>

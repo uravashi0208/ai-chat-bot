@@ -4,51 +4,39 @@ import { initSocket, disconnectSocket } from '../services/socket';
 
 const AuthContext = createContext(null);
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
+/**
+ * AuthProvider
+ *
+ * Manages authenticated user state and persists token + user to localStorage.
+ * Exposes: user, loading, loginWithPhone, logout, updateUser
+ */
+export function AuthProvider({ children }) {
+  const [user, setUser]       = useState(() => {
     try { return JSON.parse(localStorage.getItem('wa_user')); } catch { return null; }
   });
   const [loading, setLoading] = useState(true);
 
+  // Re-hydrate socket on mount if already logged in
   useEffect(() => {
     const token = localStorage.getItem('wa_token');
-    if (token && user) {
-      initSocket(token);
-      setLoading(false);
-    } else {
-      setLoading(false);
-    }
-  }, []);
+    if (token && user) initSocket(token);
+    setLoading(false);
+  }, []); // eslint-disable-line
 
-  // WhatsApp-style phone OTP login (user + token already resolved by caller)
-  const loginWithPhone = useCallback((user, token) => {
+  /**
+   * Called after OTP verification completes.
+   * Works for both existing users (from phoneCheck) and new users (from phoneRegister).
+   */
+  const loginWithPhone = useCallback((userData, token) => {
     localStorage.setItem('wa_token', token);
-    localStorage.setItem('wa_user', JSON.stringify(user));
-    setUser(user);
+    localStorage.setItem('wa_user', JSON.stringify(userData));
+    setUser(userData);
     initSocket(token);
-    return user;
-  }, []);
-
-  const login = useCallback(async (identifier, password) => {
-    const { user, token } = await authApi.login({ identifier, password });
-    localStorage.setItem('wa_token', token);
-    localStorage.setItem('wa_user', JSON.stringify(user));
-    setUser(user);
-    initSocket(token);
-    return user;
-  }, []);
-
-  const register = useCallback(async (data) => {
-    const { user, token } = await authApi.register(data);
-    localStorage.setItem('wa_token', token);
-    localStorage.setItem('wa_user', JSON.stringify(user));
-    setUser(user);
-    initSocket(token);
-    return user;
+    return userData;
   }, []);
 
   const logout = useCallback(async () => {
-    try { await authApi.logout(); } catch {}
+    try { await authApi.logout(); } catch { /* ignore */ }
     disconnectSocket();
     localStorage.removeItem('wa_token');
     localStorage.removeItem('wa_user');
@@ -62,14 +50,16 @@ export const AuthProvider = ({ children }) => {
   }, [user]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, loginWithPhone, register, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, loading, loginWithPhone, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
-export const useAuth = () => {
+export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
-};
+}
+
+// AuthContext is internal — use useAuth() hook
